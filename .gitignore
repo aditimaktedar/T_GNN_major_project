@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local environments
+venv/
+.venv/
+
+# Member C local/package backups
+Member_C_RAG_package_v1.zip
+
+# Large embedding backups that are not needed for retrieval
+RAG_pipeline/data/rag/embeddings/rag_embeddings.npy
+RAG_pipeline/data/rag/embeddings/rag_embeddings_bge_small.zip

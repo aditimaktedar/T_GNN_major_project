@@ -1,0 +1,2 @@
+model,threshold_selection,selected_threshold,validation_F1,validation_precision,validation_recall,validation_balanced_accuracy,test_AUROC,test_AUPRC,test_F1,test_precision,test_recall,test_balanced_accuracy
+C2_OFFSIDES_PRR_only,validation_F1,0.36,0.7585365853658537,0.6465696465696466,0.9174041297935103,0.7587020648967551,0.7663140053035895,0.780055268925274,0.7719021310181531,0.6671214188267395,0.9157303370786517,0.661028185570956
