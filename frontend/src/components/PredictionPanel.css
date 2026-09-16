@@ -1,0 +1,131 @@
+.prediction-card {
+  padding: 1.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.gnn-source-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.prediction-boxes-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.prediction-box {
+  background: #f8fafc;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-btn);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.box-mini-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.status-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.status-pill-badge.yes {
+  background: var(--severity-major-bg);
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #dc2626;
+}
+
+.prob-text-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.prob-big {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.prob-confidence {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.prob-progress-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.prob-progress-bar {
+  height: 100%;
+  background: var(--primary-blue);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.severity-flag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.severity-flag-badge.major {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.severity-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .prediction-boxes-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,291 @@
+.patient-sidebar-card {
+  width: 100%;
+  padding: 1.5rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-sizing: border-box;
+}
+
+/* Sidebar Patient Header */
+.sidebar-patient-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.patient-purple-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #a855f7;
+  color: #ffffff;
+  font-size: 1.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+}
+
+.sidebar-name-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.patient-sidebar-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  letter-spacing: -0.01em;
+}
+
+.patient-sub-demo {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Edit Form */
+.sidebar-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.sidebar-edit-form input, .sidebar-edit-form select {
+  border: 1px solid var(--border-card);
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.sidebar-edit-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sidebar-edit-row input.age-field {
+  width: 70px;
+}
+
+.sidebar-edit-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.save-mini-btn {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-mini-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* Action Bar - Fixed layout overflow */
+.sidebar-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chart-primary-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: var(--primary-blue);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 0.5rem;
+  border-radius: var(--radius-btn);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-primary-btn:hover {
+  background: var(--primary-blue-hover);
+}
+
+.chart-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.icon-square-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-btn);
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.icon-square-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-dark);
+}
+
+.icon-square-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Nav Menu */
+.sidebar-nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-top: 1px solid var(--border-card);
+  padding-top: 1rem;
+}
+
+.nav-item-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-btn);
+  color: var(--text-dark);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.nav-item-link:hover {
+  background: #f8fafc;
+}
+
+.nav-item-link.active {
+  background: #edf2fe;
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.nav-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.nav-icon {
+  font-size: 0.9rem;
+}
+
+.chevron-right {
+  width: 16px;
+  height: 16px;
+  color: var(--text-light);
+}
+
+.nav-item-link.active .chevron-right {
+  color: var(--primary-blue);
+}
+
+/* Collapsible Info Sections */
+.sidebar-info-section {
+  border-top: 1px solid var(--border-card);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-collapsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.section-title-text {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.chevron-down {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.chevron-down.open {
+  transform: rotate(180deg);
+}
+
+/* Key-Value Lists */
+.info-kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-size: 0.825rem;
+}
+
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.kv-key {
+  color: var(--text-muted);
+}
+
+.kv-val {
+  color: var(--text-dark);
+  font-weight: 500;
+  text-align: right;
+}
+
+.kv-val.link {
+  color: var(--primary-blue);
+}
+
+.address-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.right-align {
+  text-align: left;
+  line-height: 1.35;
+}

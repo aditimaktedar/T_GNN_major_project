@@ -1,0 +1,354 @@
+.app-layout.screenshot-theme {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  scroll-behavior: smooth;
+}
+
+.screenshot-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-card);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary-blue);
+}
+
+.brand-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.nav-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.user-avatar-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: var(--primary-blue);
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 2-Column Dashboard Grid */
+.dashboard-grid-container {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.left-sidebar-col {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 4.5rem;
+  align-self: flex-start;
+  width: 100%;
+}
+
+.right-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.main-panel-step {
+  width: 100%;
+  scroll-margin-top: 5rem;
+}
+
+/* Top Most Active Meds Card */
+.active-meds-top-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.mar-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* PROMINENT RUN EVALUATION BUTTON */
+.run-eval-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-btn);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s ease;
+}
+
+.run-eval-primary-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.run-eval-primary-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.lightning-icon {
+  width: 16px;
+  height: 16px;
+  color: #fde047;
+}
+
+.eval-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.section-title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.med-count-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #eff6ff;
+  color: var(--primary-blue);
+  border: 1px solid #bfdbfe;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+}
+
+/* Bottom Card: History & Timeline */
+.history-section-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.history-card-header {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.history-timeline-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timeline-vertical-line {
+  position: absolute;
+  top: 15px;
+  bottom: 30px;
+  left: 15px;
+  width: 2px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.add-med-btn-screenshot {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: var(--primary-blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.add-med-btn-screenshot:hover {
+  background: #dbeafe;
+}
+
+.add-med-inline-form {
+  display: flex;
+  gap: 0.5rem;
+  background: #f8fafc;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-card);
+  margin-bottom: 1rem;
+}
+
+.add-med-inline-form input {
+  flex: 1;
+  border: 1px solid var(--border-card);
+  padding: 0.4rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.confirm-add-blue-btn {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mar-table-wrapper-screenshot {
+  overflow-x: auto;
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+}
+
+.screenshot-mar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.screenshot-mar-table th {
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--border-card);
+  letter-spacing: 0.05em;
+}
+
+.screenshot-mar-table td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-dark);
+}
+
+.screenshot-mar-table tr {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.screenshot-mar-table tr:hover {
+  background: #f8fafc;
+}
+
+.screenshot-mar-table tr.selected-pair-row {
+  background: #f0f9ff;
+}
+
+.center-col {
+  text-align: center;
+  width: 90px;
+}
+
+.center-col input[type="checkbox"] {
+  accent-color: var(--primary-blue);
+  cursor: pointer;
+}
+
+.mono-code {
+  font-family: var(--font-mono);
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.drug-name-col {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.active-tag {
+  font-size: 0.7rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.right-action {
+  text-align: right;
+}
+
+.discontinue-btn {
+  background: transparent;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  font-size: 0.725rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.discontinue-btn:hover {
+  background: #fef2f2;
+}
+
+@media (max-width: 960px) {
+  .dashboard-grid-container {
+    grid-template-columns: 1fr;
+  }
+  .left-sidebar-col {
+    position: relative;
+    top: 0;
+  }
+  .mar-header-actions {
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Screenshot EHR Theme Colors */
+  --bg-page: #f4f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f8fafc;
+  
+  --border-card: #e6e8f0;
+  --border-subtle: #f1f5f9;
+
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+
+  --primary-blue: #2563eb;
+  --primary-blue-hover: #1d4ed8;
+  --primary-purple: #9333ea;
+  
+  --soft-blue-bg: #e0f2fe;
+  --soft-blue-border: #0284c7;
+  --soft-blue-text: #0369a1;
+
+  --soft-pink-bg: #fce7f3;
+  --soft-pink-border: #db2777;
+  --soft-pink-text: #9d174d;
+
+  --severity-major-bg: #fef2f2;
+  --severity-major-border: #ef4444;
+  --severity-major-text: #991b1b;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-card: 14px;
+  --radius-btn: 8px;
+  --radius-pill: 9999px;
+
+  --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-dark);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.screenshot-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+}
