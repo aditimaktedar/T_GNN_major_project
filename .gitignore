@@ -1,0 +1,148 @@
+# ============================================================
+# Secrets and credentials — never commit these
+# ============================================================
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+*credentials*
+*password*
+*secret*
+*apikey*
+*api_key*
+*drugbank*login*
+*drugbank*credential*
+
+
+# ============================================================
+# Python virtual environments
+# ============================================================
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+
+# ============================================================
+# Python cache and build artifacts
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+
+# ============================================================
+# Jupyter
+# ============================================================
+.ipynb_checkpoints/
+
+
+# ============================================================
+# OS
+# ============================================================
+.DS_Store
+Thumbs.db
+
+
+# ============================================================
+# Large datasets
+# Keep the actual files locally, but don't commit them.
+# ============================================================
+
+# Raw datasets
+data/raw/*
+!data/raw/.gitkeep
+
+# Interim datasets
+data/interim/*
+!data/interim/.gitkeep
+
+# Selected datasets
+data/selected/*
+!data/selected/.gitkeep
+
+# Processed datasets
+data/processed/*
+!data/processed/.gitkeep
+
+
+# ============================================================
+# Large data archives / external databases
+# ============================================================
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.xml.gz
+
+drugbank*.xml
+*full-database*
+
+
+# ============================================================
+# Generated model artifacts
+# ============================================================
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.pickle
+*.h5
+*.parquet
+
+.cache/
+
+
+# ============================================================
+# Generated results / outputs
+# ============================================================
+
+# Baselines
+results/baselines/*
+!results/baselines/.gitkeep
+
+# Metrics
+results/metrics/*
+!results/metrics/.gitkeep
+!results/metrics/MASTER_RESULTS.json
+
+# Figures
+results/figures/*
+!results/figures/.gitkeep
+
+# Checkpoints
+results/checkpoints/*
+!results/checkpoints/.gitkeep
+
+# Output checkpoints
+outputs/checkpoints/*
+!outputs/checkpoints/.gitkeep
+
+# Explanations
+outputs/explanations/*
+!outputs/explanations/.gitkeep
+
+# Graphs
+outputs/graphs/*
+!outputs/graphs/.gitkeep
+
+
+# ============================================================
+# General generated files
+# ============================================================
+*.log
+*.tmp
+*.temp

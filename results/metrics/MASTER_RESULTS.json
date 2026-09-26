@@ -1,0 +1,2520 @@
+{
+  "schema_version": 1,
+  "description": "Canonical experiment results for TemporalDDI-GNN Member B multiclass models. One entry per formulation + model. Reruns overwrite that entry.",
+  "source_of_truth": true,
+  "updated_at": "2026-09-20T06:42:32+00:00",
+  "formulations": {
+    "955": {
+      "formulation": "955",
+      "models": {
+        "logistic_regression": {
+          "run_id": "955_logistic_regression_20260920T064229Z_0613e60e",
+          "updated_at": "2026-09-09T08:05:47+00:00",
+          "model": "logistic_regression",
+          "display_name": "Multiclass Logistic Regression",
+          "formulation": "955",
+          "n_classes": 955,
+          "dataset_path": "data/processed/final_mimic_twosides_ml.csv",
+          "experiment_prefix": "final_mimic_twosides",
+          "checkpoint": "results/baselines/final_mimic_twosides_multiclass_logistic_regression.joblib",
+          "device": null,
+          "metrics": {},
+          "evaluation_protocol": {
+            "encoder_n_classes": 955,
+            "min_train_examples_for_frequent_slice": 20,
+            "primary_metrics": [
+              "top_3_accuracy",
+              "top_5_accuracy",
+              "macro_f1"
+            ],
+            "supplementary_metrics": [
+              "top_1_accuracy",
+              "micro_f1",
+              "balanced_accuracy"
+            ],
+            "splits": {
+              "val": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002559508574353724,
+                      "top_3_accuracy": 0.0074225748656258,
+                      "top_5_accuracy": 0.011005886869721013,
+                      "macro_f1": 7.350890835947258e-05,
+                      "micro_f1": 0.002559508574353724,
+                      "balanced_accuracy": 0.0021448508829872075
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006069802731411229,
+                      "top_5_accuracy": 0.011380880121396054,
+                      "macro_f1": 7.541715285586699e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0019028103044496487
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002559508574353724,
+                      "top_3_accuracy": 0.0074225748656258,
+                      "top_5_accuracy": 0.011005886869721013,
+                      "macro_f1": 7.350890835947258e-05,
+                      "micro_f1": 0.002559508574353724,
+                      "balanced_accuracy": 0.0021448508829872075
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006069802731411229,
+                      "top_5_accuracy": 0.011380880121396054,
+                      "macro_f1": 7.541715285586699e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0019028103044496487
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2841,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 2841,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0010559662090813093,
+                      "top_3_accuracy": 0.006687785990848293,
+                      "top_5_accuracy": 0.010559662090813094,
+                      "macro_f1": 6.155082391920743e-05,
+                      "micro_f1": 0.0010559662090813093,
+                      "balanced_accuracy": 0.0005963248997304725
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 1858,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 1858,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0016146393972012918,
+                      "top_3_accuracy": 0.006458557588805167,
+                      "top_5_accuracy": 0.012378902045209902,
+                      "macro_f1": 6.589983892640328e-05,
+                      "micro_f1": 0.0016146393972012918,
+                      "balanced_accuracy": 0.001100440176070428
+                    }
+                  }
+                }
+              },
+              "test": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00201663725737333,
+                      "top_3_accuracy": 0.007058230400806655,
+                      "top_5_accuracy": 0.01083942525838165,
+                      "macro_f1": 8.786877451492209e-05,
+                      "micro_f1": 0.00201663725737333,
+                      "balanced_accuracy": 0.002805683258603402
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.007127362875735978,
+                      "top_5_accuracy": 0.010536101642392316,
+                      "macro_f1": 8.876251934090077e-05,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.002891764572336682
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00201663725737333,
+                      "top_3_accuracy": 0.007058230400806655,
+                      "top_5_accuracy": 0.01083942525838165,
+                      "macro_f1": 8.786877451492209e-05,
+                      "micro_f1": 0.00201663725737333,
+                      "balanced_accuracy": 0.002805683258603402
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.007127362875735978,
+                      "top_5_accuracy": 0.010536101642392316,
+                      "macro_f1": 8.876251934090077e-05,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.002891764572336682
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2584,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2584,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0003869969040247678,
+                      "top_3_accuracy": 0.005030959752321981,
+                      "top_5_accuracy": 0.010061919504643963,
+                      "macro_f1": 2.7555800496004406e-05,
+                      "micro_f1": 0.0003869969040247678,
+                      "balanced_accuracy": 0.00030950170225936243
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2074,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2074,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00048216007714561236,
+                      "top_3_accuracy": 0.0048216007714561235,
+                      "top_5_accuracy": 0.009643201542912247,
+                      "macro_f1": 2.8300551860761285e-05,
+                      "micro_f1": 0.00048216007714561236,
+                      "balanced_accuracy": 0.0003979307600477517
+                    }
+                  }
+                }
+              }
+            },
+            "primary_reporting": {
+              "primary": {
+                "description": "Headline metrics for model comparison and reporting.",
+                "recommended_slices": [
+                  "seen_class + pair_type_dedup",
+                  "frequent_ge_20 + pair_type_dedup"
+                ],
+                "metrics": [
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1"
+                ],
+                "splits": [
+                  "val",
+                  "test"
+                ]
+              },
+              "supplementary": {
+                "description": "Diagnostic metrics; not sufficient alone for 955-class conclusions.",
+                "recommended_slices": [
+                  "full_955 + row",
+                  "seen_class + row"
+                ],
+                "metrics": [
+                  "top_1_accuracy",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ],
+                "notes": [
+                  "top_1_accuracy on 955 classes is near random baseline (~0.1%).",
+                  "micro_f1 is dominated by frequent interaction types.",
+                  "Row-level metrics count repeated admissions multiple times."
+                ]
+              }
+            }
+          },
+          "splits": {
+            "val": {
+              "slices": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002559508574353724,
+                      "top_3_accuracy": 0.0074225748656258,
+                      "top_5_accuracy": 0.011005886869721013,
+                      "macro_f1": 7.350890835947258e-05,
+                      "micro_f1": 0.002559508574353724,
+                      "balanced_accuracy": 0.0021448508829872075
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006069802731411229,
+                      "top_5_accuracy": 0.011380880121396054,
+                      "macro_f1": 7.541715285586699e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0019028103044496487
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002559508574353724,
+                      "top_3_accuracy": 0.0074225748656258,
+                      "top_5_accuracy": 0.011005886869721013,
+                      "macro_f1": 7.350890835947258e-05,
+                      "micro_f1": 0.002559508574353724,
+                      "balanced_accuracy": 0.0021448508829872075
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006069802731411229,
+                      "top_5_accuracy": 0.011380880121396054,
+                      "macro_f1": 7.541715285586699e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0019028103044496487
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2841,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 2841,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0010559662090813093,
+                      "top_3_accuracy": 0.006687785990848293,
+                      "top_5_accuracy": 0.010559662090813094,
+                      "macro_f1": 6.155082391920743e-05,
+                      "micro_f1": 0.0010559662090813093,
+                      "balanced_accuracy": 0.0005963248997304725
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 1858,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 1858,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0016146393972012918,
+                      "top_3_accuracy": 0.006458557588805167,
+                      "top_5_accuracy": 0.012378902045209902,
+                      "macro_f1": 6.589983892640328e-05,
+                      "micro_f1": 0.0016146393972012918,
+                      "balanced_accuracy": 0.001100440176070428
+                    }
+                  }
+                }
+              }
+            },
+            "test": {
+              "slices": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00201663725737333,
+                      "top_3_accuracy": 0.007058230400806655,
+                      "top_5_accuracy": 0.01083942525838165,
+                      "macro_f1": 8.786877451492209e-05,
+                      "micro_f1": 0.00201663725737333,
+                      "balanced_accuracy": 0.002805683258603402
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.007127362875735978,
+                      "top_5_accuracy": 0.010536101642392316,
+                      "macro_f1": 8.876251934090077e-05,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.002891764572336682
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00201663725737333,
+                      "top_3_accuracy": 0.007058230400806655,
+                      "top_5_accuracy": 0.01083942525838165,
+                      "macro_f1": 8.786877451492209e-05,
+                      "micro_f1": 0.00201663725737333,
+                      "balanced_accuracy": 0.002805683258603402
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.007127362875735978,
+                      "top_5_accuracy": 0.010536101642392316,
+                      "macro_f1": 8.876251934090077e-05,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.002891764572336682
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2584,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2584,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0003869969040247678,
+                      "top_3_accuracy": 0.005030959752321981,
+                      "top_5_accuracy": 0.010061919504643963,
+                      "macro_f1": 2.7555800496004406e-05,
+                      "micro_f1": 0.0003869969040247678,
+                      "balanced_accuracy": 0.00030950170225936243
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2074,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2074,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00048216007714561236,
+                      "top_3_accuracy": 0.0048216007714561235,
+                      "top_5_accuracy": 0.009643201542912247,
+                      "macro_f1": 2.8300551860761285e-05,
+                      "micro_f1": 0.00048216007714561236,
+                      "balanced_accuracy": 0.0003979307600477517
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "dataset_report": null,
+          "final_train_loss": null,
+          "final_val_loss": null,
+          "source_files": [
+            "results/metrics/final_mimic_twosides_multiclass_logistic_regression_protocol.json"
+          ]
+        },
+        "static_gat": {
+          "run_id": "955_static_gat_20260920T064229Z_f826cae5",
+          "updated_at": "2026-09-09T07:42:31+00:00",
+          "model": "static_gat",
+          "display_name": "Multiclass Static GAT",
+          "formulation": "955",
+          "n_classes": 955,
+          "dataset_path": "data/processed/final_mimic_twosides_ml.csv",
+          "experiment_prefix": "final_mimic_twosides",
+          "checkpoint": "results/baselines/final_mimic_twosides_multiclass_static_gat.pt",
+          "device": "mps",
+          "metrics": {
+            "train": {
+              "n_samples": 18709,
+              "n_seen_label_samples": 18709,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.008552033780533434,
+              "macro_f1": 0.0025693505981373614,
+              "micro_f1": 0.008552033780533434,
+              "balanced_accuracy": 0.036317782036599404,
+              "top_3_accuracy": 0.02522849965257363,
+              "top_5_accuracy": 0.041370463413330484
+            },
+            "val": {
+              "n_samples": 3907,
+              "n_seen_label_samples": 3907,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0028154594317890964,
+              "macro_f1": 0.00016892454664867157,
+              "micro_f1": 0.0028154594317890964,
+              "balanced_accuracy": 0.004007285974499089,
+              "top_3_accuracy": 0.005630918863578193,
+              "top_5_accuracy": 0.010238034297414897
+            },
+            "test": {
+              "n_samples": 3967,
+              "n_seen_label_samples": 3967,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0015124779430299975,
+              "macro_f1": 6.232157383293159e-05,
+              "micro_f1": 0.0015124779430299975,
+              "balanced_accuracy": 0.0036267665588285373,
+              "top_3_accuracy": 0.004537433829089992,
+              "top_5_accuracy": 0.008570708343836652
+            }
+          },
+          "evaluation_protocol": {
+            "encoder_n_classes": 955,
+            "min_train_examples_for_frequent_slice": 20,
+            "primary_metrics": [
+              "top_3_accuracy",
+              "top_5_accuracy",
+              "macro_f1"
+            ],
+            "supplementary_metrics": [
+              "top_1_accuracy",
+              "micro_f1",
+              "balanced_accuracy"
+            ],
+            "splits": {
+              "val": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0028154594317890964,
+                      "top_3_accuracy": 0.005630918863578193,
+                      "top_5_accuracy": 0.010238034297414897,
+                      "macro_f1": 0.00016892454664867157,
+                      "micro_f1": 0.0028154594317890964,
+                      "balanced_accuracy": 0.004007285974499089
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.00417298937784522,
+                      "top_5_accuracy": 0.006828528072837633,
+                      "macro_f1": 0.00017268137471110703,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.003346994535519126
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0028154594317890964,
+                      "top_3_accuracy": 0.005630918863578193,
+                      "top_5_accuracy": 0.010238034297414897,
+                      "macro_f1": 0.00016892454664867157,
+                      "micro_f1": 0.0028154594317890964,
+                      "balanced_accuracy": 0.004007285974499089
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.00417298937784522,
+                      "top_5_accuracy": 0.006828528072837633,
+                      "macro_f1": 0.00017268137471110703,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.003346994535519126
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2841,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 2841,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0024639211545230554,
+                      "top_3_accuracy": 0.0024639211545230554,
+                      "top_5_accuracy": 0.003871876099964801,
+                      "macro_f1": 5.6790445491978915e-05,
+                      "micro_f1": 0.0024639211545230554,
+                      "balanced_accuracy": 0.0021475256769374414
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 1858,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 1858,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.001076426264800861,
+                      "top_3_accuracy": 0.001076426264800861,
+                      "top_5_accuracy": 0.002691065662002153,
+                      "macro_f1": 6.118372610519207e-05,
+                      "micro_f1": 0.001076426264800861,
+                      "balanced_accuracy": 0.0012605042016806723
+                    }
+                  }
+                }
+              },
+              "test": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015124779430299975,
+                      "top_3_accuracy": 0.004537433829089992,
+                      "top_5_accuracy": 0.008570708343836652,
+                      "macro_f1": 6.232157383293159e-05,
+                      "micro_f1": 0.0015124779430299975,
+                      "balanced_accuracy": 0.0036267665588285373
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015494267121165168,
+                      "top_3_accuracy": 0.004958165478772854,
+                      "top_5_accuracy": 0.00836690424542919,
+                      "macro_f1": 6.263414241566296e-05,
+                      "micro_f1": 0.0015494267121165168,
+                      "balanced_accuracy": 0.003516090584028606
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015124779430299975,
+                      "top_3_accuracy": 0.004537433829089992,
+                      "top_5_accuracy": 0.008570708343836652,
+                      "macro_f1": 6.232157383293159e-05,
+                      "micro_f1": 0.0015124779430299975,
+                      "balanced_accuracy": 0.0036267665588285373
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015494267121165168,
+                      "top_3_accuracy": 0.004958165478772854,
+                      "top_5_accuracy": 0.00836690424542919,
+                      "macro_f1": 6.263414241566296e-05,
+                      "micro_f1": 0.0015494267121165168,
+                      "balanced_accuracy": 0.003516090584028606
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2584,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2584,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0003869969040247678,
+                      "top_3_accuracy": 0.001934984520123839,
+                      "top_5_accuracy": 0.005417956656346749,
+                      "macro_f1": 2.3530795929172305e-05,
+                      "micro_f1": 0.0003869969040247678,
+                      "balanced_accuracy": 0.0003979307600477517
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2074,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2074,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00048216007714561236,
+                      "top_3_accuracy": 0.0024108003857280617,
+                      "top_5_accuracy": 0.005303760848601736,
+                      "macro_f1": 2.4071733766624542e-05,
+                      "micro_f1": 0.00048216007714561236,
+                      "balanced_accuracy": 0.0005571030640668524
+                    }
+                  }
+                }
+              }
+            },
+            "primary_reporting": {
+              "primary": {
+                "description": "Headline metrics for model comparison and reporting.",
+                "recommended_slices": [
+                  "seen_class + pair_type_dedup",
+                  "frequent_ge_20 + pair_type_dedup"
+                ],
+                "metrics": [
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1"
+                ],
+                "splits": [
+                  "val",
+                  "test"
+                ]
+              },
+              "supplementary": {
+                "description": "Diagnostic metrics; not sufficient alone for 955-class conclusions.",
+                "recommended_slices": [
+                  "full_955 + row",
+                  "seen_class + row"
+                ],
+                "metrics": [
+                  "top_1_accuracy",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ],
+                "notes": [
+                  "top_1_accuracy on 955 classes is near random baseline (~0.1%).",
+                  "micro_f1 is dominated by frequent interaction types.",
+                  "Row-level metrics count repeated admissions multiple times."
+                ]
+              }
+            }
+          },
+          "splits": {
+            "train": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 18709,
+                "n_seen_label_samples": 18709,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.008552033780533434,
+                  "top_3_accuracy": 0.02522849965257363,
+                  "top_5_accuracy": 0.041370463413330484,
+                  "macro_f1": 0.0025693505981373614,
+                  "micro_f1": 0.008552033780533434,
+                  "balanced_accuracy": 0.036317782036599404
+                }
+              }
+            },
+            "val": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 3907,
+                "n_seen_label_samples": 3907,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.0028154594317890964,
+                  "top_3_accuracy": 0.005630918863578193,
+                  "top_5_accuracy": 0.010238034297414897,
+                  "macro_f1": 0.00016892454664867157,
+                  "micro_f1": 0.0028154594317890964,
+                  "balanced_accuracy": 0.004007285974499089
+                }
+              },
+              "slices": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0028154594317890964,
+                      "top_3_accuracy": 0.005630918863578193,
+                      "top_5_accuracy": 0.010238034297414897,
+                      "macro_f1": 0.00016892454664867157,
+                      "micro_f1": 0.0028154594317890964,
+                      "balanced_accuracy": 0.004007285974499089
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.00417298937784522,
+                      "top_5_accuracy": 0.006828528072837633,
+                      "macro_f1": 0.00017268137471110703,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.003346994535519126
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0028154594317890964,
+                      "top_3_accuracy": 0.005630918863578193,
+                      "top_5_accuracy": 0.010238034297414897,
+                      "macro_f1": 0.00016892454664867157,
+                      "micro_f1": 0.0028154594317890964,
+                      "balanced_accuracy": 0.004007285974499089
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.00417298937784522,
+                      "top_5_accuracy": 0.006828528072837633,
+                      "macro_f1": 0.00017268137471110703,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.003346994535519126
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2841,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 2841,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0024639211545230554,
+                      "top_3_accuracy": 0.0024639211545230554,
+                      "top_5_accuracy": 0.003871876099964801,
+                      "macro_f1": 5.6790445491978915e-05,
+                      "micro_f1": 0.0024639211545230554,
+                      "balanced_accuracy": 0.0021475256769374414
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 1858,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 1858,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.001076426264800861,
+                      "top_3_accuracy": 0.001076426264800861,
+                      "top_5_accuracy": 0.002691065662002153,
+                      "macro_f1": 6.118372610519207e-05,
+                      "micro_f1": 0.001076426264800861,
+                      "balanced_accuracy": 0.0012605042016806723
+                    }
+                  }
+                }
+              }
+            },
+            "test": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 3967,
+                "n_seen_label_samples": 3967,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.0015124779430299975,
+                  "top_3_accuracy": 0.004537433829089992,
+                  "top_5_accuracy": 0.008570708343836652,
+                  "macro_f1": 6.232157383293159e-05,
+                  "micro_f1": 0.0015124779430299975,
+                  "balanced_accuracy": 0.0036267665588285373
+                }
+              },
+              "slices": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015124779430299975,
+                      "top_3_accuracy": 0.004537433829089992,
+                      "top_5_accuracy": 0.008570708343836652,
+                      "macro_f1": 6.232157383293159e-05,
+                      "micro_f1": 0.0015124779430299975,
+                      "balanced_accuracy": 0.0036267665588285373
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015494267121165168,
+                      "top_3_accuracy": 0.004958165478772854,
+                      "top_5_accuracy": 0.00836690424542919,
+                      "macro_f1": 6.263414241566296e-05,
+                      "micro_f1": 0.0015494267121165168,
+                      "balanced_accuracy": 0.003516090584028606
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015124779430299975,
+                      "top_3_accuracy": 0.004537433829089992,
+                      "top_5_accuracy": 0.008570708343836652,
+                      "macro_f1": 6.232157383293159e-05,
+                      "micro_f1": 0.0015124779430299975,
+                      "balanced_accuracy": 0.0036267665588285373
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0015494267121165168,
+                      "top_3_accuracy": 0.004958165478772854,
+                      "top_5_accuracy": 0.00836690424542919,
+                      "macro_f1": 6.263414241566296e-05,
+                      "micro_f1": 0.0015494267121165168,
+                      "balanced_accuracy": 0.003516090584028606
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2584,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2584,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0003869969040247678,
+                      "top_3_accuracy": 0.001934984520123839,
+                      "top_5_accuracy": 0.005417956656346749,
+                      "macro_f1": 2.3530795929172305e-05,
+                      "micro_f1": 0.0003869969040247678,
+                      "balanced_accuracy": 0.0003979307600477517
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2074,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2074,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00048216007714561236,
+                      "top_3_accuracy": 0.0024108003857280617,
+                      "top_5_accuracy": 0.005303760848601736,
+                      "macro_f1": 2.4071733766624542e-05,
+                      "micro_f1": 0.00048216007714561236,
+                      "balanced_accuracy": 0.0005571030640668524
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "dataset_report": null,
+          "final_train_loss": 5.710012806035979,
+          "final_val_loss": 7.5967259562112455,
+          "source_files": [
+            "results/metrics/final_mimic_twosides_multiclass_static_gat_summary.json",
+            "results/metrics/final_mimic_twosides_multiclass_static_gat_protocol.json"
+          ]
+        },
+        "molecular_gnn": {
+          "run_id": "955_molecular_gnn_20260920T064229Z_f326c715",
+          "updated_at": "2026-09-09T07:59:00+00:00",
+          "model": "molecular_gnn",
+          "display_name": "Atom-level Molecular GNN (GIN)",
+          "formulation": "955",
+          "n_classes": 955,
+          "dataset_path": "data/processed/final_mimic_twosides_ml.csv",
+          "experiment_prefix": "final_mimic_twosides",
+          "checkpoint": "results/baselines/final_mimic_twosides_multiclass_molecular_gnn.pt",
+          "device": "mps",
+          "metrics": {
+            "train": {
+              "n_samples": 18709,
+              "n_seen_label_samples": 18709,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0029932118231867015,
+              "macro_f1": 9.048527485781419e-05,
+              "micro_f1": 0.0029932118231867015,
+              "balanced_accuracy": 0.001975208741535553,
+              "top_3_accuracy": 0.0086589342027901,
+              "top_5_accuracy": 0.01379015447111016
+            },
+            "val": {
+              "n_samples": 3907,
+              "n_seen_label_samples": 3907,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0017916560020476069,
+              "macro_f1": 9.602866367315423e-05,
+              "micro_f1": 0.0017916560020476069,
+              "balanced_accuracy": 0.000796903460837887,
+              "top_3_accuracy": 0.006654722293319683,
+              "top_5_accuracy": 0.011261837727156386
+            },
+            "test": {
+              "n_samples": 3967,
+              "n_seen_label_samples": 3967,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.002268716914544996,
+              "macro_f1": 7.640116554222543e-06,
+              "micro_f1": 0.002268716914544996,
+              "balanced_accuracy": 0.0007151370679380214,
+              "top_3_accuracy": 0.00604991177211999,
+              "top_5_accuracy": 0.009326947315351651
+            }
+          },
+          "evaluation_protocol": {
+            "encoder_n_classes": 955,
+            "min_train_examples_for_frequent_slice": 20,
+            "primary_metrics": [
+              "top_3_accuracy",
+              "top_5_accuracy",
+              "macro_f1"
+            ],
+            "supplementary_metrics": [
+              "top_1_accuracy",
+              "micro_f1",
+              "balanced_accuracy"
+            ],
+            "splits": {
+              "val": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0017916560020476069,
+                      "top_3_accuracy": 0.006654722293319683,
+                      "top_5_accuracy": 0.011261837727156386,
+                      "macro_f1": 9.602866367315423e-05,
+                      "micro_f1": 0.0017916560020476069,
+                      "balanced_accuracy": 0.000796903460837887
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006449165402124431,
+                      "top_5_accuracy": 0.009484066767830045,
+                      "macro_f1": 9.418887142244682e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0008879781420765028
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0017916560020476069,
+                      "top_3_accuracy": 0.006654722293319683,
+                      "top_5_accuracy": 0.011261837727156386,
+                      "macro_f1": 9.602866367315423e-05,
+                      "micro_f1": 0.0017916560020476069,
+                      "balanced_accuracy": 0.000796903460837887
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006449165402124431,
+                      "top_5_accuracy": 0.009484066767830045,
+                      "macro_f1": 9.418887142244682e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0008879781420765028
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2841,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 2841,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0024639211545230554,
+                      "top_3_accuracy": 0.008799718409010912,
+                      "top_5_accuracy": 0.014431538190777896,
+                      "macro_f1": 0.00010725173370509063,
+                      "micro_f1": 0.0024639211545230554,
+                      "balanced_accuracy": 0.001633986928104575
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 1858,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 1858,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002691065662002153,
+                      "top_3_accuracy": 0.008611410118406888,
+                      "top_5_accuracy": 0.011840688912809472,
+                      "macro_f1": 0.00010514165293983976,
+                      "micro_f1": 0.002691065662002153,
+                      "balanced_accuracy": 0.0018207282913165266
+                    }
+                  }
+                }
+              },
+              "test": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002268716914544996,
+                      "top_3_accuracy": 0.00604991177211999,
+                      "top_5_accuracy": 0.009326947315351651,
+                      "macro_f1": 7.640116554222543e-06,
+                      "micro_f1": 0.002268716914544996,
+                      "balanced_accuracy": 0.0007151370679380214
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.006197706848466067,
+                      "top_5_accuracy": 0.009296560272699102,
+                      "macro_f1": 7.856208930264922e-06,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.0006952721493841876
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002268716914544996,
+                      "top_3_accuracy": 0.00604991177211999,
+                      "top_5_accuracy": 0.009326947315351651,
+                      "macro_f1": 7.640116554222543e-06,
+                      "micro_f1": 0.002268716914544996,
+                      "balanced_accuracy": 0.0007151370679380214
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.006197706848466067,
+                      "top_5_accuracy": 0.009296560272699102,
+                      "macro_f1": 7.856208930264922e-06,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.0006952721493841876
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2584,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2584,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00348297213622291,
+                      "top_3_accuracy": 0.008513931888544891,
+                      "top_5_accuracy": 0.012770897832817337,
+                      "macro_f1": 1.180223390060552e-05,
+                      "micro_f1": 0.00348297213622291,
+                      "balanced_accuracy": 0.001671309192200557
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2074,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2074,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0033751205400192863,
+                      "top_3_accuracy": 0.008678881388621022,
+                      "top_5_accuracy": 0.01253616200578592,
+                      "macro_f1": 1.2412943153153552e-05,
+                      "micro_f1": 0.0033751205400192863,
+                      "balanced_accuracy": 0.0016248839368616529
+                    }
+                  }
+                }
+              }
+            },
+            "primary_reporting": {
+              "primary": {
+                "description": "Headline metrics for model comparison and reporting.",
+                "recommended_slices": [
+                  "seen_class + pair_type_dedup",
+                  "frequent_ge_20 + pair_type_dedup"
+                ],
+                "metrics": [
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1"
+                ],
+                "splits": [
+                  "val",
+                  "test"
+                ]
+              },
+              "supplementary": {
+                "description": "Diagnostic metrics; not sufficient alone for 955-class conclusions.",
+                "recommended_slices": [
+                  "full_955 + row",
+                  "seen_class + row"
+                ],
+                "metrics": [
+                  "top_1_accuracy",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ],
+                "notes": [
+                  "top_1_accuracy on 955 classes is near random baseline (~0.1%).",
+                  "micro_f1 is dominated by frequent interaction types.",
+                  "Row-level metrics count repeated admissions multiple times."
+                ]
+              }
+            }
+          },
+          "splits": {
+            "train": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 18709,
+                "n_seen_label_samples": 18709,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.0029932118231867015,
+                  "top_3_accuracy": 0.0086589342027901,
+                  "top_5_accuracy": 0.01379015447111016,
+                  "macro_f1": 9.048527485781419e-05,
+                  "micro_f1": 0.0029932118231867015,
+                  "balanced_accuracy": 0.001975208741535553
+                }
+              }
+            },
+            "val": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 3907,
+                "n_seen_label_samples": 3907,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.0017916560020476069,
+                  "top_3_accuracy": 0.006654722293319683,
+                  "top_5_accuracy": 0.011261837727156386,
+                  "macro_f1": 9.602866367315423e-05,
+                  "micro_f1": 0.0017916560020476069,
+                  "balanced_accuracy": 0.000796903460837887
+                }
+              },
+              "slices": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0017916560020476069,
+                      "top_3_accuracy": 0.006654722293319683,
+                      "top_5_accuracy": 0.011261837727156386,
+                      "macro_f1": 9.602866367315423e-05,
+                      "micro_f1": 0.0017916560020476069,
+                      "balanced_accuracy": 0.000796903460837887
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006449165402124431,
+                      "top_5_accuracy": 0.009484066767830045,
+                      "macro_f1": 9.418887142244682e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0008879781420765028
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3907,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 3907,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0017916560020476069,
+                      "top_3_accuracy": 0.006654722293319683,
+                      "top_5_accuracy": 0.011261837727156386,
+                      "macro_f1": 9.602866367315423e-05,
+                      "micro_f1": 0.0017916560020476069,
+                      "balanced_accuracy": 0.000796903460837887
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2636,
+                    "n_classes": 732,
+                    "metrics": {
+                      "n_seen_label_samples": 2636,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0018968133535660092,
+                      "top_3_accuracy": 0.006449165402124431,
+                      "top_5_accuracy": 0.009484066767830045,
+                      "macro_f1": 9.418887142244682e-05,
+                      "micro_f1": 0.0018968133535660092,
+                      "balanced_accuracy": 0.0008879781420765028
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2841,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 2841,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0024639211545230554,
+                      "top_3_accuracy": 0.008799718409010912,
+                      "top_5_accuracy": 0.014431538190777896,
+                      "macro_f1": 0.00010725173370509063,
+                      "micro_f1": 0.0024639211545230554,
+                      "balanced_accuracy": 0.001633986928104575
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 1858,
+                    "n_classes": 357,
+                    "metrics": {
+                      "n_seen_label_samples": 1858,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002691065662002153,
+                      "top_3_accuracy": 0.008611410118406888,
+                      "top_5_accuracy": 0.011840688912809472,
+                      "macro_f1": 0.00010514165293983976,
+                      "micro_f1": 0.002691065662002153,
+                      "balanced_accuracy": 0.0018207282913165266
+                    }
+                  }
+                }
+              }
+            },
+            "test": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 3967,
+                "n_seen_label_samples": 3967,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.002268716914544996,
+                  "top_3_accuracy": 0.00604991177211999,
+                  "top_5_accuracy": 0.009326947315351651,
+                  "macro_f1": 7.640116554222543e-06,
+                  "micro_f1": 0.002268716914544996,
+                  "balanced_accuracy": 0.0007151370679380214
+                }
+              },
+              "slices": {
+                "full_955": {
+                  "definition": "All evaluable rows with encoded labels (955 train-fit classes; unseen types excluded).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002268716914544996,
+                      "top_3_accuracy": 0.00604991177211999,
+                      "top_5_accuracy": 0.009326947315351651,
+                      "macro_f1": 7.640116554222543e-06,
+                      "micro_f1": 0.002268716914544996,
+                      "balanced_accuracy": 0.0007151370679380214
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.006197706848466067,
+                      "top_5_accuracy": 0.009296560272699102,
+                      "macro_f1": 7.856208930264922e-06,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.0006952721493841876
+                    }
+                  }
+                },
+                "seen_class": {
+                  "definition": "Rows whose TWOSIDES type appears in the training split (label_index >= 0).",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 3967,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3967,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.002268716914544996,
+                      "top_3_accuracy": 0.00604991177211999,
+                      "top_5_accuracy": 0.009326947315351651,
+                      "macro_f1": 7.640116554222543e-06,
+                      "micro_f1": 0.002268716914544996,
+                      "balanced_accuracy": 0.0007151370679380214
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 3227,
+                    "n_classes": 839,
+                    "metrics": {
+                      "n_seen_label_samples": 3227,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0021691973969631237,
+                      "top_3_accuracy": 0.006197706848466067,
+                      "top_5_accuracy": 0.009296560272699102,
+                      "macro_f1": 7.856208930264922e-06,
+                      "micro_f1": 0.0021691973969631237,
+                      "balanced_accuracy": 0.0006952721493841876
+                    }
+                  }
+                },
+                "frequent_ge_20": {
+                  "definition": "Rows whose type has >= 20 training examples.",
+                  "row_level": {
+                    "level": "row",
+                    "level_definition": "One prediction per dataset row (admission-level).",
+                    "n_samples": 2584,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2584,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.00348297213622291,
+                      "top_3_accuracy": 0.008513931888544891,
+                      "top_5_accuracy": 0.012770897832817337,
+                      "macro_f1": 1.180223390060552e-05,
+                      "micro_f1": 0.00348297213622291,
+                      "balanced_accuracy": 0.001671309192200557
+                    }
+                  },
+                  "pair_type_dedup_level": {
+                    "level": "pair_type_dedup",
+                    "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                    "n_pair_types": 2074,
+                    "n_classes": 359,
+                    "metrics": {
+                      "n_seen_label_samples": 2074,
+                      "n_unseen_label_samples": 0,
+                      "top_1_accuracy": 0.0033751205400192863,
+                      "top_3_accuracy": 0.008678881388621022,
+                      "top_5_accuracy": 0.01253616200578592,
+                      "macro_f1": 1.2412943153153552e-05,
+                      "micro_f1": 0.0033751205400192863,
+                      "balanced_accuracy": 0.0016248839368616529
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "dataset_report": {
+            "n_rows": 26597,
+            "n_train_rows": 18709,
+            "n_val_rows": 3916,
+            "n_test_rows": 3972,
+            "unique_pair_key": 145,
+            "unique_types_total": 962,
+            "unique_types_train": 955,
+            "unique_types_val": 738,
+            "unique_types_test": 843,
+            "n_classes_train_encoder": 955,
+            "pair_split_leakage_pairs": 0,
+            "trainable_rows": 26583,
+            "invalid_fingerprint_rows": 14
+          },
+          "final_train_loss": 6.281451586585137,
+          "final_val_loss": 7.981273612355798,
+          "source_files": [
+            "results/metrics/final_mimic_twosides_multiclass_molecular_gnn_summary.json",
+            "results/metrics/final_mimic_twosides_multiclass_molecular_gnn_protocol.json"
+          ],
+          "environment": {
+            "python_version": "3.14.2 (v3.14.2:df793163d58, Dec  5 2025, 12:18:06) [Clang 16.0.0 (clang-1600.0.26.6)]",
+            "numpy_version": "2.5.2",
+            "pandas_version": "3.0.5",
+            "sklearn_version": "1.9.0",
+            "torch_version": "2.12.1",
+            "torch_geometric_version": "2.8.0.post1",
+            "rdkit_version": "2026.03.6",
+            "device": "mps",
+            "config": {
+              "seed": 42,
+              "molecular_gnn": {
+                "hidden_dim": 64,
+                "num_layers": 3,
+                "dropout": 0.2,
+                "fusion_hidden": 128,
+                "learning_rate": 0.001,
+                "epochs": 20,
+                "batch_size": 32,
+                "class_weight": "balanced"
+              },
+              "sanity_check": {
+                "max_train_rows": 256,
+                "max_val_rows": 128,
+                "epochs": 2,
+                "batch_size": 16
+              }
+            }
+          }
+        }
+      },
+      "n_classes": 955,
+      "dataset_path": "data/processed/final_mimic_twosides_ml.csv"
+    },
+    "frequent363": {
+      "formulation": "frequent363",
+      "models": {
+        "logistic_regression": {
+          "run_id": "frequent363_logistic_regression_20260920T064232Z_317c1b9c",
+          "updated_at": "2026-09-13T05:44:39+00:00",
+          "model": "logistic_regression",
+          "display_name": "Multiclass Logistic Regression",
+          "formulation": "frequent363",
+          "n_classes": 363,
+          "dataset_path": "data/processed/final_mimic_twosides_ml_frequent363.csv",
+          "experiment_prefix": "final_mimic_twosides_frequent363",
+          "checkpoint": "results/baselines/final_mimic_twosides_frequent363_multiclass_logistic_regression.joblib",
+          "device": null,
+          "metrics": {
+            "train": {
+              "n_samples": 13458,
+              "n_seen_label_samples": 13458,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.011888839352058256,
+              "macro_f1": 0.003977164796080905,
+              "micro_f1": 0.011888839352058256,
+              "balanced_accuracy": 0.020623362497508454,
+              "top_3_accuracy": 0.03566651805617477,
+              "top_5_accuracy": 0.05951850200624164
+            },
+            "val": {
+              "n_samples": 2841,
+              "n_seen_label_samples": 2841,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0045758535726856744,
+              "macro_f1": 0.0004014774809903219,
+              "micro_f1": 0.0045758535726856744,
+              "balanced_accuracy": 0.004332364770224124,
+              "top_3_accuracy": 0.014431538190777896,
+              "top_5_accuracy": 0.02393523407250968
+            },
+            "test": {
+              "n_samples": 2584,
+              "n_seen_label_samples": 2584,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.003869969040247678,
+              "macro_f1": 0.0003698364139062801,
+              "micro_f1": 0.003869969040247678,
+              "balanced_accuracy": 0.003090042888093027,
+              "top_3_accuracy": 0.011609907120743035,
+              "top_5_accuracy": 0.022058823529411766
+            }
+          },
+          "evaluation_protocol": {
+            "formulation": "frequent363",
+            "encoder_n_classes": 363,
+            "slice": "full_363",
+            "slice_definition": "All rows in the frequent363 dataset (types with >= 20 train rows; no 'other' class).",
+            "primary_level": "pair_type_dedup",
+            "primary_metrics": [
+              "top_3_accuracy",
+              "top_5_accuracy",
+              "macro_f1"
+            ],
+            "supplementary_metrics": [
+              "top_1_accuracy",
+              "micro_f1",
+              "balanced_accuracy"
+            ],
+            "splits": {
+              "val": {
+                "row_level": {
+                  "level": "row",
+                  "level_definition": "One prediction per dataset row (admission-level).",
+                  "n_samples": 2841,
+                  "n_classes": 357,
+                  "metrics": {
+                    "top_1_accuracy": 0.0045758535726856744,
+                    "top_3_accuracy": 0.014431538190777896,
+                    "top_5_accuracy": 0.02393523407250968,
+                    "macro_f1": 0.0004014774809903219,
+                    "micro_f1": 0.0045758535726856744,
+                    "balanced_accuracy": 0.004332364770224124
+                  }
+                },
+                "pair_type_dedup_level": {
+                  "level": "pair_type_dedup",
+                  "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                  "n_pair_types": 1858,
+                  "n_classes": 357,
+                  "metrics": {
+                    "top_1_accuracy": 0.004305705059203444,
+                    "top_3_accuracy": 0.014531754574811625,
+                    "top_5_accuracy": 0.023681377825618945,
+                    "macro_f1": 0.00040605245078345213,
+                    "micro_f1": 0.004305705059203444,
+                    "balanced_accuracy": 0.003981592637054821
+                  }
+                }
+              },
+              "test": {
+                "row_level": {
+                  "level": "row",
+                  "level_definition": "One prediction per dataset row (admission-level).",
+                  "n_samples": 2584,
+                  "n_classes": 359,
+                  "metrics": {
+                    "top_1_accuracy": 0.003869969040247678,
+                    "top_3_accuracy": 0.011609907120743035,
+                    "top_5_accuracy": 0.022058823529411766,
+                    "macro_f1": 0.0003698364139062801,
+                    "micro_f1": 0.003869969040247678,
+                    "balanced_accuracy": 0.003090042888093027
+                  }
+                },
+                "pair_type_dedup_level": {
+                  "level": "pair_type_dedup",
+                  "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                  "n_pair_types": 2074,
+                  "n_classes": 359,
+                  "metrics": {
+                    "top_1_accuracy": 0.0033751205400192863,
+                    "top_3_accuracy": 0.011089681774349084,
+                    "top_5_accuracy": 0.021215043394406944,
+                    "macro_f1": 0.00037784295616506046,
+                    "micro_f1": 0.0033751205400192863,
+                    "balanced_accuracy": 0.0025334925056373523
+                  }
+                }
+              }
+            },
+            "primary_reporting": {
+              "primary": {
+                "splits": [
+                  "val",
+                  "test"
+                ],
+                "level": "pair_type_dedup",
+                "metrics": [
+                  "top_1_accuracy",
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ]
+              },
+              "supplementary": {
+                "level": "row",
+                "metrics": [
+                  "top_1_accuracy",
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ]
+              }
+            }
+          },
+          "splits": {
+            "train": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 13458,
+                "n_seen_label_samples": 13458,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.011888839352058256,
+                  "top_3_accuracy": 0.03566651805617477,
+                  "top_5_accuracy": 0.05951850200624164,
+                  "macro_f1": 0.003977164796080905,
+                  "micro_f1": 0.011888839352058256,
+                  "balanced_accuracy": 0.020623362497508454
+                }
+              }
+            },
+            "val": {
+              "row_level": {
+                "level": "row",
+                "level_definition": "One prediction per dataset row (admission-level).",
+                "n_samples": 2841,
+                "n_classes": 357,
+                "metrics": {
+                  "top_1_accuracy": 0.0045758535726856744,
+                  "top_3_accuracy": 0.014431538190777896,
+                  "top_5_accuracy": 0.02393523407250968,
+                  "macro_f1": 0.0004014774809903219,
+                  "micro_f1": 0.0045758535726856744,
+                  "balanced_accuracy": 0.004332364770224124
+                }
+              },
+              "pair_type_dedup_level": {
+                "level": "pair_type_dedup",
+                "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                "n_pair_types": 1858,
+                "n_classes": 357,
+                "metrics": {
+                  "top_1_accuracy": 0.004305705059203444,
+                  "top_3_accuracy": 0.014531754574811625,
+                  "top_5_accuracy": 0.023681377825618945,
+                  "macro_f1": 0.00040605245078345213,
+                  "micro_f1": 0.004305705059203444,
+                  "balanced_accuracy": 0.003981592637054821
+                }
+              }
+            },
+            "test": {
+              "row_level": {
+                "level": "row",
+                "level_definition": "One prediction per dataset row (admission-level).",
+                "n_samples": 2584,
+                "n_classes": 359,
+                "metrics": {
+                  "top_1_accuracy": 0.003869969040247678,
+                  "top_3_accuracy": 0.011609907120743035,
+                  "top_5_accuracy": 0.022058823529411766,
+                  "macro_f1": 0.0003698364139062801,
+                  "micro_f1": 0.003869969040247678,
+                  "balanced_accuracy": 0.003090042888093027
+                }
+              },
+              "pair_type_dedup_level": {
+                "level": "pair_type_dedup",
+                "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                "n_pair_types": 2074,
+                "n_classes": 359,
+                "metrics": {
+                  "top_1_accuracy": 0.0033751205400192863,
+                  "top_3_accuracy": 0.011089681774349084,
+                  "top_5_accuracy": 0.021215043394406944,
+                  "macro_f1": 0.00037784295616506046,
+                  "micro_f1": 0.0033751205400192863,
+                  "balanced_accuracy": 0.0025334925056373523
+                }
+              }
+            }
+          },
+          "dataset_report": {
+            "n_rows": 18883,
+            "n_train_rows": 13458,
+            "n_val_rows": 2841,
+            "n_test_rows": 2584,
+            "unique_pair_key": 145,
+            "unique_types_total": 363,
+            "unique_types_train": 363,
+            "unique_types_val": 357,
+            "unique_types_test": 359,
+            "n_classes_train_encoder": 363,
+            "pair_split_leakage_pairs": 0,
+            "trainable_rows": 18883,
+            "invalid_fingerprint_rows": 0
+          },
+          "final_train_loss": null,
+          "final_val_loss": null,
+          "source_files": [
+            "results/metrics/final_mimic_twosides_frequent363_multiclass_run_summary.json"
+          ]
+        },
+        "static_gat": {
+          "run_id": "frequent363_static_gat_20260920T064232Z_2fe91e9d",
+          "updated_at": "2026-09-13T05:44:39+00:00",
+          "model": "static_gat",
+          "display_name": "Multiclass Static GAT",
+          "formulation": "frequent363",
+          "n_classes": 363,
+          "dataset_path": "data/processed/final_mimic_twosides_ml_frequent363.csv",
+          "experiment_prefix": "final_mimic_twosides_frequent363",
+          "checkpoint": "results/baselines/final_mimic_twosides_frequent363_multiclass_static_gat.pt",
+          "device": "mps",
+          "metrics": {
+            "train": {
+              "n_samples": 13458,
+              "n_seen_label_samples": 13458,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.01069995541685243,
+              "macro_f1": 0.0038677998815356044,
+              "micro_f1": 0.01069995541685243,
+              "balanced_accuracy": 0.015431411635011915,
+              "top_3_accuracy": 0.03209986625055729,
+              "top_5_accuracy": 0.052979640362609604
+            },
+            "val": {
+              "n_samples": 2841,
+              "n_seen_label_samples": 2841,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.00598380851812742,
+              "macro_f1": 0.0006390834905186565,
+              "micro_f1": 0.00598380851812742,
+              "balanced_accuracy": 0.0058534524921079545,
+              "top_3_accuracy": 0.013727560718057022,
+              "top_5_accuracy": 0.02006335797254488
+            },
+            "test": {
+              "n_samples": 2584,
+              "n_seen_label_samples": 2584,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0030959752321981426,
+              "macro_f1": 0.000268238456287731,
+              "micro_f1": 0.0030959752321981426,
+              "balanced_accuracy": 0.003404518724852987,
+              "top_3_accuracy": 0.010835913312693499,
+              "top_5_accuracy": 0.019736842105263157
+            }
+          },
+          "evaluation_protocol": {
+            "formulation": "frequent363",
+            "encoder_n_classes": 363,
+            "slice": "full_363",
+            "slice_definition": "All rows in the frequent363 dataset (types with >= 20 train rows; no 'other' class).",
+            "primary_level": "pair_type_dedup",
+            "primary_metrics": [
+              "top_3_accuracy",
+              "top_5_accuracy",
+              "macro_f1"
+            ],
+            "supplementary_metrics": [
+              "top_1_accuracy",
+              "micro_f1",
+              "balanced_accuracy"
+            ],
+            "splits": {
+              "val": {
+                "row_level": {
+                  "level": "row",
+                  "level_definition": "One prediction per dataset row (admission-level).",
+                  "n_samples": 2841,
+                  "n_classes": 357,
+                  "metrics": {
+                    "top_1_accuracy": 0.00598380851812742,
+                    "top_3_accuracy": 0.013727560718057022,
+                    "top_5_accuracy": 0.02006335797254488,
+                    "macro_f1": 0.0006390834905186565,
+                    "micro_f1": 0.00598380851812742,
+                    "balanced_accuracy": 0.0058534524921079545
+                  }
+                },
+                "pair_type_dedup_level": {
+                  "level": "pair_type_dedup",
+                  "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                  "n_pair_types": 1858,
+                  "n_classes": 357,
+                  "metrics": {
+                    "top_1_accuracy": 0.005382131324004306,
+                    "top_3_accuracy": 0.012917115177610334,
+                    "top_5_accuracy": 0.01883745963401507,
+                    "macro_f1": 0.000652188169407032,
+                    "micro_f1": 0.005382131324004306,
+                    "balanced_accuracy": 0.005623189446718859
+                  }
+                }
+              },
+              "test": {
+                "row_level": {
+                  "level": "row",
+                  "level_definition": "One prediction per dataset row (admission-level).",
+                  "n_samples": 2584,
+                  "n_classes": 359,
+                  "metrics": {
+                    "top_1_accuracy": 0.0030959752321981426,
+                    "top_3_accuracy": 0.010835913312693499,
+                    "top_5_accuracy": 0.019736842105263157,
+                    "macro_f1": 0.000268238456287731,
+                    "micro_f1": 0.0030959752321981426,
+                    "balanced_accuracy": 0.003404518724852987
+                  }
+                },
+                "pair_type_dedup_level": {
+                  "level": "pair_type_dedup",
+                  "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                  "n_pair_types": 2074,
+                  "n_classes": 359,
+                  "metrics": {
+                    "top_1_accuracy": 0.0024108003857280617,
+                    "top_3_accuracy": 0.010125361620057859,
+                    "top_5_accuracy": 0.018804243008678882,
+                    "macro_f1": 0.0002699091911333635,
+                    "micro_f1": 0.0024108003857280617,
+                    "balanced_accuracy": 0.002904894548348587
+                  }
+                }
+              }
+            },
+            "primary_reporting": {
+              "primary": {
+                "splits": [
+                  "val",
+                  "test"
+                ],
+                "level": "pair_type_dedup",
+                "metrics": [
+                  "top_1_accuracy",
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ]
+              },
+              "supplementary": {
+                "level": "row",
+                "metrics": [
+                  "top_1_accuracy",
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ]
+              }
+            }
+          },
+          "splits": {
+            "train": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 13458,
+                "n_seen_label_samples": 13458,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.01069995541685243,
+                  "top_3_accuracy": 0.03209986625055729,
+                  "top_5_accuracy": 0.052979640362609604,
+                  "macro_f1": 0.0038677998815356044,
+                  "micro_f1": 0.01069995541685243,
+                  "balanced_accuracy": 0.015431411635011915
+                }
+              }
+            },
+            "val": {
+              "row_level": {
+                "level": "row",
+                "level_definition": "One prediction per dataset row (admission-level).",
+                "n_samples": 2841,
+                "n_classes": 357,
+                "metrics": {
+                  "top_1_accuracy": 0.00598380851812742,
+                  "top_3_accuracy": 0.013727560718057022,
+                  "top_5_accuracy": 0.02006335797254488,
+                  "macro_f1": 0.0006390834905186565,
+                  "micro_f1": 0.00598380851812742,
+                  "balanced_accuracy": 0.0058534524921079545
+                }
+              },
+              "pair_type_dedup_level": {
+                "level": "pair_type_dedup",
+                "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                "n_pair_types": 1858,
+                "n_classes": 357,
+                "metrics": {
+                  "top_1_accuracy": 0.005382131324004306,
+                  "top_3_accuracy": 0.012917115177610334,
+                  "top_5_accuracy": 0.01883745963401507,
+                  "macro_f1": 0.000652188169407032,
+                  "micro_f1": 0.005382131324004306,
+                  "balanced_accuracy": 0.005623189446718859
+                }
+              }
+            },
+            "test": {
+              "row_level": {
+                "level": "row",
+                "level_definition": "One prediction per dataset row (admission-level).",
+                "n_samples": 2584,
+                "n_classes": 359,
+                "metrics": {
+                  "top_1_accuracy": 0.0030959752321981426,
+                  "top_3_accuracy": 0.010835913312693499,
+                  "top_5_accuracy": 0.019736842105263157,
+                  "macro_f1": 0.000268238456287731,
+                  "micro_f1": 0.0030959752321981426,
+                  "balanced_accuracy": 0.003404518724852987
+                }
+              },
+              "pair_type_dedup_level": {
+                "level": "pair_type_dedup",
+                "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                "n_pair_types": 2074,
+                "n_classes": 359,
+                "metrics": {
+                  "top_1_accuracy": 0.0024108003857280617,
+                  "top_3_accuracy": 0.010125361620057859,
+                  "top_5_accuracy": 0.018804243008678882,
+                  "macro_f1": 0.0002699091911333635,
+                  "micro_f1": 0.0024108003857280617,
+                  "balanced_accuracy": 0.002904894548348587
+                }
+              }
+            }
+          },
+          "dataset_report": null,
+          "final_train_loss": 5.217425360051072,
+          "final_val_loss": 6.332881316710054,
+          "source_files": [
+            "results/metrics/final_mimic_twosides_frequent363_multiclass_static_gat_summary.json",
+            "results/metrics/final_mimic_twosides_frequent363_multiclass_run_summary.json",
+            "results/metrics/final_mimic_twosides_frequent363_multiclass_static_gat_protocol.json"
+          ]
+        },
+        "molecular_gnn": {
+          "run_id": "frequent363_molecular_gnn_20260920T064232Z_714f5c0a",
+          "updated_at": "2026-09-13T06:48:40+00:00",
+          "model": "molecular_gnn",
+          "display_name": "Atom-level Molecular GNN (GIN)",
+          "formulation": "frequent363",
+          "n_classes": 363,
+          "dataset_path": "data/processed/final_mimic_twosides_ml_frequent363.csv",
+          "experiment_prefix": "final_mimic_twosides_frequent363",
+          "checkpoint": "results/baselines/final_mimic_twosides_frequent363_multiclass_molecular_gnn.pt",
+          "device": "mps",
+          "metrics": {
+            "train": {
+              "n_samples": 13458,
+              "n_seen_label_samples": 13458,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.008768019022142963,
+              "macro_f1": 0.002296241359294554,
+              "micro_f1": 0.008768019022142963,
+              "balanced_accuracy": 0.013157124683723492,
+              "top_3_accuracy": 0.024520731163620153,
+              "top_5_accuracy": 0.04057066428889879
+            },
+            "val": {
+              "n_samples": 2841,
+              "n_seen_label_samples": 2841,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0028159098908834917,
+              "macro_f1": 0.0002858192327637611,
+              "micro_f1": 0.0028159098908834917,
+              "balanced_accuracy": 0.0031574168128789977,
+              "top_3_accuracy": 0.006687785990848293,
+              "top_5_accuracy": 0.010207673354452657
+            },
+            "test": {
+              "n_samples": 2584,
+              "n_seen_label_samples": 2584,
+              "n_unseen_label_samples": 0,
+              "accuracy": 0.0023219814241486067,
+              "macro_f1": 8.872100697429574e-05,
+              "micro_f1": 0.0023219814241486067,
+              "balanced_accuracy": 0.0022051996285979572,
+              "top_3_accuracy": 0.007352941176470588,
+              "top_5_accuracy": 0.01238390092879257
+            }
+          },
+          "evaluation_protocol": {
+            "formulation": "frequent363",
+            "encoder_n_classes": 363,
+            "slice": "full_363",
+            "slice_definition": "All rows in the frequent363 dataset (types with >= 20 train rows; no 'other' class).",
+            "primary_level": "pair_type_dedup",
+            "primary_metrics": [
+              "top_3_accuracy",
+              "top_5_accuracy",
+              "macro_f1"
+            ],
+            "supplementary_metrics": [
+              "top_1_accuracy",
+              "micro_f1",
+              "balanced_accuracy"
+            ],
+            "splits": {
+              "val": {
+                "row_level": {
+                  "level": "row",
+                  "level_definition": "One prediction per dataset row (admission-level).",
+                  "n_samples": 2841,
+                  "n_classes": 357,
+                  "metrics": {
+                    "top_1_accuracy": 0.0028159098908834917,
+                    "top_3_accuracy": 0.006687785990848293,
+                    "top_5_accuracy": 0.010207673354452657,
+                    "macro_f1": 0.0002858192327637611,
+                    "micro_f1": 0.0028159098908834917,
+                    "balanced_accuracy": 0.0031574168128789977
+                  }
+                },
+                "pair_type_dedup_level": {
+                  "level": "pair_type_dedup",
+                  "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                  "n_pair_types": 1858,
+                  "n_classes": 357,
+                  "metrics": {
+                    "top_1_accuracy": 0.002691065662002153,
+                    "top_3_accuracy": 0.005920344456404736,
+                    "top_5_accuracy": 0.00968783638320775,
+                    "macro_f1": 0.0003000848987962206,
+                    "micro_f1": 0.002691065662002153,
+                    "balanced_accuracy": 0.002804455115379485
+                  }
+                }
+              },
+              "test": {
+                "row_level": {
+                  "level": "row",
+                  "level_definition": "One prediction per dataset row (admission-level).",
+                  "n_samples": 2584,
+                  "n_classes": 359,
+                  "metrics": {
+                    "top_1_accuracy": 0.0023219814241486067,
+                    "top_3_accuracy": 0.007352941176470588,
+                    "top_5_accuracy": 0.01238390092879257,
+                    "macro_f1": 8.872100697429574e-05,
+                    "micro_f1": 0.0023219814241486067,
+                    "balanced_accuracy": 0.0022051996285979572
+                  }
+                },
+                "pair_type_dedup_level": {
+                  "level": "pair_type_dedup",
+                  "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                  "n_pair_types": 2074,
+                  "n_classes": 359,
+                  "metrics": {
+                    "top_1_accuracy": 0.0024108003857280617,
+                    "top_3_accuracy": 0.007714561234329798,
+                    "top_5_accuracy": 0.013018322082931534,
+                    "macro_f1": 9.08071629559658e-05,
+                    "micro_f1": 0.0024108003857280617,
+                    "balanced_accuracy": 0.0022151478975991515
+                  }
+                }
+              }
+            },
+            "primary_reporting": {
+              "primary": {
+                "splits": [
+                  "val",
+                  "test"
+                ],
+                "level": "pair_type_dedup",
+                "metrics": [
+                  "top_1_accuracy",
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ]
+              },
+              "supplementary": {
+                "level": "row",
+                "metrics": [
+                  "top_1_accuracy",
+                  "top_3_accuracy",
+                  "top_5_accuracy",
+                  "macro_f1",
+                  "micro_f1",
+                  "balanced_accuracy"
+                ]
+              }
+            }
+          },
+          "splits": {
+            "train": {
+              "row_level": {
+                "level": "row",
+                "n_samples": 13458,
+                "n_seen_label_samples": 13458,
+                "n_unseen_label_samples": 0,
+                "metrics": {
+                  "top_1_accuracy": 0.008768019022142963,
+                  "top_3_accuracy": 0.024520731163620153,
+                  "top_5_accuracy": 0.04057066428889879,
+                  "macro_f1": 0.002296241359294554,
+                  "micro_f1": 0.008768019022142963,
+                  "balanced_accuracy": 0.013157124683723492
+                }
+              }
+            },
+            "val": {
+              "row_level": {
+                "level": "row",
+                "level_definition": "One prediction per dataset row (admission-level).",
+                "n_samples": 2841,
+                "n_classes": 357,
+                "metrics": {
+                  "top_1_accuracy": 0.0028159098908834917,
+                  "top_3_accuracy": 0.006687785990848293,
+                  "top_5_accuracy": 0.010207673354452657,
+                  "macro_f1": 0.0002858192327637611,
+                  "micro_f1": 0.0028159098908834917,
+                  "balanced_accuracy": 0.0031574168128789977
+                }
+              },
+              "pair_type_dedup_level": {
+                "level": "pair_type_dedup",
+                "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                "n_pair_types": 1858,
+                "n_classes": 357,
+                "metrics": {
+                  "top_1_accuracy": 0.002691065662002153,
+                  "top_3_accuracy": 0.005920344456404736,
+                  "top_5_accuracy": 0.00968783638320775,
+                  "macro_f1": 0.0003000848987962206,
+                  "micro_f1": 0.002691065662002153,
+                  "balanced_accuracy": 0.002804455115379485
+                }
+              }
+            },
+            "test": {
+              "row_level": {
+                "level": "row",
+                "level_definition": "One prediction per dataset row (admission-level).",
+                "n_samples": 2584,
+                "n_classes": 359,
+                "metrics": {
+                  "top_1_accuracy": 0.0023219814241486067,
+                  "top_3_accuracy": 0.007352941176470588,
+                  "top_5_accuracy": 0.01238390092879257,
+                  "macro_f1": 8.872100697429574e-05,
+                  "micro_f1": 0.0023219814241486067,
+                  "balanced_accuracy": 0.0022051996285979572
+                }
+              },
+              "pair_type_dedup_level": {
+                "level": "pair_type_dedup",
+                "level_definition": "One prediction per unique (pair_key, type); first row kept (features identical).",
+                "n_pair_types": 2074,
+                "n_classes": 359,
+                "metrics": {
+                  "top_1_accuracy": 0.0024108003857280617,
+                  "top_3_accuracy": 0.007714561234329798,
+                  "top_5_accuracy": 0.013018322082931534,
+                  "macro_f1": 9.08071629559658e-05,
+                  "micro_f1": 0.0024108003857280617,
+                  "balanced_accuracy": 0.0022151478975991515
+                }
+              }
+            }
+          },
+          "dataset_report": {
+            "n_rows": 18883,
+            "n_train_rows": 13458,
+            "n_val_rows": 2841,
+            "n_test_rows": 2584,
+            "unique_pair_key": 145,
+            "unique_types_total": 363,
+            "unique_types_train": 363,
+            "unique_types_val": 357,
+            "unique_types_test": 359,
+            "n_classes_train_encoder": 363,
+            "pair_split_leakage_pairs": 0,
+            "trainable_rows": 18883,
+            "invalid_fingerprint_rows": 0
+          },
+          "final_train_loss": 5.369042608425794,
+          "final_val_loss": 6.018839809332001,
+          "source_files": [
+            "results/metrics/final_mimic_twosides_frequent363_multiclass_molecular_gnn_summary.json",
+            "results/metrics/final_mimic_twosides_frequent363_multiclass_molecular_gnn_protocol.json"
+          ],
+          "environment": {
+            "python_version": "3.14.2 (v3.14.2:df793163d58, Dec  5 2025, 12:18:06) [Clang 16.0.0 (clang-1600.0.26.6)]",
+            "numpy_version": "2.5.2",
+            "pandas_version": "3.0.5",
+            "sklearn_version": "1.9.0",
+            "torch_version": "2.12.1",
+            "torch_geometric_version": "2.8.0.post1",
+            "rdkit_version": "2026.03.6",
+            "device": "mps",
+            "config": {
+              "seed": 42,
+              "molecular_gnn": {
+                "hidden_dim": 64,
+                "num_layers": 3,
+                "dropout": 0.2,
+                "fusion_hidden": 128,
+                "learning_rate": 0.001,
+                "epochs": 20,
+                "batch_size": 32,
+                "class_weight": "balanced"
+              },
+              "sanity_check": {
+                "max_train_rows": 256,
+                "max_val_rows": 128,
+                "epochs": 2,
+                "batch_size": 16
+              }
+            }
+          }
+        }
+      },
+      "n_classes": 363,
+      "dataset_path": "data/processed/final_mimic_twosides_ml_frequent363.csv"
+    }
+  },
+  "legacy_ingest": {
+    "ingested_entries": [
+      "955/logistic_regression",
+      "955/static_gat",
+      "955/molecular_gnn",
+      "frequent363/logistic_regression",
+      "frequent363/static_gat",
+      "frequent363/molecular_gnn"
+    ],
+    "note": "Legacy per-run summary and protocol JSON files were copied into this file and left on disk as archive. New training writes only MASTER_RESULTS.json."
+  }
+}

@@ -1,0 +1,6 @@
+# SYNTHETIC SOFTWARE VALIDATION ONLY
+
+| Model | Accuracy | Precision | Recall | F1 | AUROC | PR-AUC | MCC |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Logistic Regression | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.5 | -1.0 |
+| Static GAT | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.5 | -1.0 |

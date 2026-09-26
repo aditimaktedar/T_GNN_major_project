@@ -1,0 +1,25 @@
+{
+  "seed": 42,
+  "pair_feature_method": "concat",
+  "logistic_regression": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "max_iter": 2000
+  },
+  "static_gat": {
+    "hidden_dim": 64,
+    "heads": 4,
+    "dropout": 0.2,
+    "learning_rate": 0.001,
+    "epochs": 20,
+    "batch_size": 32,
+    "class_weight": "balanced"
+  },
+  "sanity_check": {
+    "max_train_rows": 512,
+    "max_val_rows": 256,
+    "logistic_regression_max_iter": 200,
+    "static_gat_epochs": 2,
+    "batch_size": 32
+  }
+}

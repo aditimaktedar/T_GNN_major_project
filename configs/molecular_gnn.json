@@ -1,0 +1,19 @@
+{
+  "seed": 42,
+  "molecular_gnn": {
+    "hidden_dim": 64,
+    "num_layers": 3,
+    "dropout": 0.2,
+    "fusion_hidden": 128,
+    "learning_rate": 0.001,
+    "epochs": 20,
+    "batch_size": 32,
+    "class_weight": "balanced"
+  },
+  "sanity_check": {
+    "max_train_rows": 256,
+    "max_val_rows": 128,
+    "epochs": 2,
+    "batch_size": 16
+  }
+}

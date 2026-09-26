@@ -1,0 +1,6 @@
+demo_pair_id,demo_drug_a,demo_drug_b,demo_label,demo_note
+1,DEMO-DRUG-A,DEMO-DRUG-B,0,made-up pair
+2,DEMO-DRUG-A,DEMO-DRUG-C,1,made-up pair
+3,DEMO-DRUG-B,,0,missing demo_drug_b on purpose
+4,DEMO-DRUG-C,DEMO-DRUG-D,1,made-up pair
+5,,DEMO-DRUG-A,0,missing demo_drug_a on purpose
