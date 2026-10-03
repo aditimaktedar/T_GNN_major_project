@@ -1,0 +1,82 @@
+[
+  {
+    "path": ".gitignore",
+    "size_bytes": 81,
+    "sha256": "c46bbd72718b9fc88b637d0ae1b8931cfda50d565a9ae6157afe2d40c6550982"
+  },
+  {
+    "path": "README.md",
+    "size_bytes": 1458,
+    "sha256": "ea0498903d1a37a12876e74a1cc4ada69c1de9dca6ad6d3585ff14a3d55f7265"
+  },
+  {
+    "path": "api/rag_contract.py",
+    "size_bytes": 416,
+    "sha256": "65de0b5b05bd026f0d47fff77368732fb9d16d81bcfe70718c08d6cb8c59152b"
+  },
+  {
+    "path": "checkpoints/severity_patient_fold_1.pt",
+    "size_bytes": 78790,
+    "sha256": "cf4d0001378e02a04af149efd412397592a934bfe334cdecf4fb45812bfa01c8"
+  },
+  {
+    "path": "checkpoints/severity_patient_fold_2.pt",
+    "size_bytes": 78790,
+    "sha256": "efbbcf1330d5289540903a0b94faf4bcabac157f7ea165264970524736c322da"
+  },
+  {
+    "path": "checkpoints/severity_patient_fold_3.pt",
+    "size_bytes": 78790,
+    "sha256": "0077aff322e311aadd25caf3fe16af22f8ce4f3d9e4112d391fa6b737c6f4ea2"
+  },
+  {
+    "path": "checkpoints/severity_patient_fold_4.pt",
+    "size_bytes": 78790,
+    "sha256": "b017232d3e0d47de825937e4b4fda450047a11a4113e2ed49ea31d391300d175"
+  },
+  {
+    "path": "checkpoints/severity_patient_fold_5.pt",
+    "size_bytes": 78790,
+    "sha256": "43de599940cc576244b48dac082c8b4b7d8f699621ab38fa0f0c5fcacc0d4101"
+  },
+  {
+    "path": "configs/model_config.json",
+    "size_bytes": 792,
+    "sha256": "947d5b9d1d476605a8c92e7be290e0a0d269e8403707b8de72a256a2184ebea9"
+  },
+  {
+    "path": "docs/DEPLOYMENT_NOTES.md",
+    "size_bytes": 439,
+    "sha256": "3e980922894621d22d5e62cf0438054168caeab0bd40a1ec3f8df038e3ace973"
+  },
+  {
+    "path": "metrics/final_experiment_results.csv",
+    "size_bytes": 708,
+    "sha256": "a8b88f939a93fcc5a11c0e172a135f39816b4f28f59f51f3eecb9063c9085f43"
+  },
+  {
+    "path": "metrics/presence_final_benchmark.csv",
+    "size_bytes": 1019,
+    "sha256": "245b82ae84a8275966160bfba2304e1a7b775d62ccd988578606292e6a0a447c"
+  },
+  {
+    "path": "metrics/severity_patient_disjoint_metrics.csv",
+    "size_bytes": 360,
+    "sha256": "278313b555a92045dea5e337a81968ff82fd876209df42563a6ff8c722bb0062"
+  },
+  {
+    "path": "requirements.txt",
+    "size_bytes": 53,
+    "sha256": "e0a276f6e8c20f767839bb85df128c88d16fddef94ea3d0720170a7f55b97fb3"
+  },
+  {
+    "path": "src/inference.py",
+    "size_bytes": 2073,
+    "sha256": "d2bf3f4e85de63f33f74a4bef7f9edb00b0bca83caa9e0a4d526f28822b955e2"
+  },
+  {
+    "path": "src/model.py",
+    "size_bytes": 3022,
+    "sha256": "71c44e8985dea592d94cede4688aa0916fc323c07faebe15da32f375ef498902"
+  }
+]
