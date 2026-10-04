@@ -1,0 +1,39 @@
+{
+  "project": "TemporalDDI-GNN",
+  "branch": "model_v2",
+  "architecture": {
+    "embedding_dim": 32,
+    "graph_layers": 2,
+    "graph_layer": "SafeGraphConv",
+    "residual": "x + x1 + x2",
+    "pair_dimension": 160,
+    "shared_dimension": 64
+  },
+  "presence": {
+    "classes": [
+      "No",
+      "Yes"
+    ],
+    "dataset": "MIMIC-IV 2.1",
+    "label_source": "TWOSIDES",
+    "temporal_window_hours": 24
+  },
+  "severity": {
+    "classes": [
+      "Minor",
+      "Moderate",
+      "Major"
+    ],
+    "dataset": "MIMIC-IV Demo 2.2",
+    "evaluation": "patient_disjoint_5fold"
+  },
+  "training": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001
+  },
+  "rag": {
+    "integration": "external_api",
+    "model_prediction_separate_from_evidence": true
+  }
+}

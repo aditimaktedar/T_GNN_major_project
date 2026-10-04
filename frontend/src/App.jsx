@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 import { initialPatient, samplePredictionsDatabase } from './data/mockPayload';
 import { PatientCard } from './components/PatientCard';
@@ -17,6 +17,7 @@ export default function App() {
 
   // Evaluated data state + loading state
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [apiStatus, setApiStatus] = useState('checking'); // 'connected' | 'offline' | 'checking'
   const [activeEvaluatedData, setActiveEvaluatedData] = useState(
     samplePredictionsDatabase["Pantoprazole+Modafinil"]
   );
@@ -32,6 +33,14 @@ export default function App() {
   const predictionRef = useRef(null);
   const ragRef = useRef(null);
   const evidenceRef = useRef(null);
+
+  // Check backend health on mount
+  useEffect(() => {
+    fetch('/api/health')
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(() => setApiStatus('connected'))
+      .catch(() => setApiStatus('offline'));
+  }, []);
 
   const handleSelectNavTab = (tabId) => {
     setActiveNavTab(tabId);
@@ -50,18 +59,48 @@ export default function App() {
     }
   };
 
-  // Trigger evaluation function
-  const handleRunEvaluation = () => {
+  // Trigger evaluation function with Live API query and fallback
+  const handleRunEvaluation = async () => {
     if (selectedPair.length < 2) {
       alert("Please select exactly 2 medications from the MAR table to evaluate.");
       return;
     }
 
     setIsEvaluating(true);
+    const drug1 = selectedPair[0];
+    const drug2 = selectedPair[1];
 
+    try {
+      const response = await fetch('/api/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          drug_a: drug1.id,
+          drug_b: drug2.id,
+          drug_a_name: drug1.name,
+          drug_b_name: drug2.name,
+          patient_id: patient.mrn,
+        }),
+      });
+
+      if (response.ok) {
+        const liveData = await response.json();
+        setActiveEvaluatedData(liveData);
+        setApiStatus('connected');
+        setIsEvaluating(false);
+
+        if (predictionRef.current) {
+          predictionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend API not reachable, falling back to local dataset:", err);
+      setApiStatus('offline');
+    }
+
+    // Fallback demo database logic
     setTimeout(() => {
-      const drug1 = selectedPair[0];
-      const drug2 = selectedPair[1];
       const pairKey = `${drug1.name}+${drug2.name}`;
       const pairKeyReverse = `${drug2.name}+${drug1.name}`;
 
@@ -73,11 +112,10 @@ export default function App() {
       setActiveEvaluatedData(matchedData);
       setIsEvaluating(false);
 
-      // Scroll to prediction results
       if (predictionRef.current) {
         predictionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 650);
+    }, 450);
   };
 
   // Update Patient Profile
@@ -163,6 +201,19 @@ export default function App() {
         <div className="nav-brand">
           <span className="brand-dot"></span>
           <span className="brand-text font-bold">Clinical Portal &bull; T-GNN DDI Evaluator</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <span style={{
+            display: 'inline-block',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: apiStatus === 'connected' ? '#10b981' : '#f59e0b',
+            boxShadow: apiStatus === 'connected' ? '0 0 8px #10b981' : 'none'
+          }}></span>
+          <span style={{ color: '#e2e8f0', fontWeight: 500 }}>
+            {apiStatus === 'connected' ? 'Live T-GNN v2 + RAG API' : 'Demo Dataset Mode'}
+          </span>
         </div>
       </header>
 
