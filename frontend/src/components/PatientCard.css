@@ -20,7 +20,7 @@
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: #a855f7;
+  background: var(--primary-purple);
   color: #ffffff;
   font-size: 1.75rem;
   font-weight: 700;
@@ -57,7 +57,9 @@
 }
 
 .sidebar-edit-form input, .sidebar-edit-form select {
-  border: 1px solid var(--border-card);
+  background: var(--input-bg);
+  color: var(--text-dark);
+  border: 1px solid var(--input-border);
   padding: 0.4rem 0.65rem;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -90,9 +92,9 @@
 }
 
 .cancel-mini-btn {
-  background: #f1f5f9;
-  color: #475569;
-  border: none;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  border: 1px solid var(--border-card);
   padding: 0.35rem 0.75rem;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -143,9 +145,9 @@
   width: 32px;
   height: 32px;
   border-radius: var(--radius-btn);
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: #475569;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,7 +157,7 @@
 }
 
 .icon-square-btn:hover {
-  background: #e2e8f0;
+  background: var(--border-card);
   color: var(--text-dark);
 }
 
@@ -187,12 +189,12 @@
 }
 
 .nav-item-link:hover {
-  background: #f8fafc;
+  background: var(--bg-hover);
 }
 
 .nav-item-link.active {
-  background: #edf2fe;
-  color: var(--primary-blue);
+  background: var(--soft-blue-bg);
+  color: var(--soft-blue-text);
   font-weight: 600;
 }
 
@@ -213,7 +215,7 @@
 }
 
 .nav-item-link.active .chevron-right {
-  color: var(--primary-blue);
+  color: var(--soft-blue-text);
 }
 
 /* Collapsible Info Sections */

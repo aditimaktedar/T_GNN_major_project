@@ -18,7 +18,7 @@
 }
 
 .timeline-node-dot.pink-node {
-  background: #db2777;
+  background: var(--soft-pink-border);
   color: white;
 }
 
@@ -31,11 +31,12 @@
   border-radius: var(--radius-btn);
   border: 1px solid var(--border-card);
   overflow: hidden;
+  background: var(--bg-card);
 }
 
 .timeline-content-card.pink-card-bg {
   background: var(--soft-pink-bg);
-  border-color: #fbcfe8;
+  border-color: var(--soft-pink-border);
 }
 
 .timeline-card-header {
@@ -86,18 +87,18 @@
   font-size: 0.875rem;
   line-height: 1.55;
   color: var(--text-dark);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--bg-card);
   padding: 0.85rem 1rem;
   border-radius: 6px;
-  border: 1px solid rgba(219, 39, 119, 0.2);
+  border: 1px solid var(--border-card);
 }
 
 /* Screenshot Table Style */
 .rag-table-wrapper {
   overflow-x: auto;
   border-radius: 6px;
-  border: 1px solid #fbcfe8;
-  background: #ffffff;
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
 }
 
 .rag-screenshot-table {
@@ -108,18 +109,18 @@
 }
 
 .rag-screenshot-table th {
-  background: #ffffff;
+  background: var(--table-header-bg);
   color: var(--text-muted);
   font-weight: 700;
   padding: 0.5rem 0.85rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-card);
   font-size: 0.7rem;
   letter-spacing: 0.05em;
 }
 
 .rag-screenshot-table td {
   padding: 0.55rem 0.85rem;
-  border-bottom: 1px solid #f9fafb;
+  border-bottom: 1px solid var(--border-subtle);
   color: var(--text-dark);
 }
 
@@ -133,7 +134,7 @@
   font-weight: 600;
 }
 
-.tag-val-text.green { color: #059669; }
-.tag-val-text.purple { color: #7e22ce; }
+.tag-val-text.green { color: #10b981; }
+.tag-val-text.purple { color: #a855f7; }
 .tag-val-text.blue { color: #0284c7; }
-.tag-val-text.red { color: #dc2626; }
+.tag-val-text.red { color: #ef4444; }

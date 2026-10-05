@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Screenshot EHR Theme Colors */
+  /* Light EHR Theme Colors */
   --bg-page: #f4f5f9;
   --bg-card: #ffffff;
   --bg-hover: #f8fafc;
@@ -12,6 +12,13 @@
   --text-dark: #1e293b;
   --text-muted: #64748b;
   --text-light: #94a3b8;
+
+  --nav-bg: #ffffff;
+  --table-header-bg: #f8fafc;
+  --table-selected-row: #f0f9ff;
+
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
 
   --primary-blue: #2563eb;
   --primary-blue-hover: #1d4ed8;
@@ -24,6 +31,18 @@
   --soft-pink-bg: #fce7f3;
   --soft-pink-border: #db2777;
   --soft-pink-text: #9d174d;
+
+  --soft-purple-bg: #f3e8ff;
+  --soft-purple-border: #9333ea;
+  --soft-purple-text: #6b21a8;
+
+  --soft-amber-bg: #fef3c7;
+  --soft-amber-border: #d97706;
+  --soft-amber-text: #92400e;
+
+  --soft-emerald-bg: #d1fae5;
+  --soft-emerald-border: #059669;
+  --soft-emerald-text: #065f46;
 
   --severity-major-bg: #fef2f2;
   --severity-major-border: #ef4444;
@@ -39,6 +58,57 @@
   --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
 }
 
+/* Dark EHR Theme Colors */
+.dark-theme {
+  --bg-page: #090d16;
+  --bg-card: #131b2e;
+  --bg-hover: #1c2842;
+  
+  --border-card: #233252;
+  --border-subtle: #1a2640;
+
+  --text-dark: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+
+  --nav-bg: #131b2e;
+  --table-header-bg: #0f172a;
+  --table-selected-row: rgba(37, 99, 235, 0.18);
+
+  --input-bg: #0f172a;
+  --input-border: #334155;
+
+  --primary-blue: #3b82f6;
+  --primary-blue-hover: #60a5fa;
+  --primary-purple: #a855f7;
+  
+  --soft-blue-bg: rgba(2, 132, 199, 0.2);
+  --soft-blue-border: #38bdf8;
+  --soft-blue-text: #7dd3fc;
+
+  --soft-pink-bg: rgba(219, 39, 119, 0.2);
+  --soft-pink-border: #f472b6;
+  --soft-pink-text: #fbcfe8;
+
+  --soft-purple-bg: rgba(147, 51, 234, 0.2);
+  --soft-purple-border: #c084fc;
+  --soft-purple-text: #e9d5ff;
+
+  --soft-amber-bg: rgba(217, 119, 6, 0.2);
+  --soft-amber-border: #fbbf24;
+  --soft-amber-text: #fde68a;
+
+  --soft-emerald-bg: rgba(5, 150, 105, 0.2);
+  --soft-emerald-border: #34d399;
+  --soft-emerald-text: #a7f3d0;
+
+  --severity-major-bg: rgba(239, 68, 68, 0.2);
+  --severity-major-border: #f87171;
+  --severity-major-text: #fca5a5;
+
+  --shadow-soft: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -52,6 +122,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 #root {
@@ -65,4 +136,5 @@ body {
   border: 1px solid var(--border-card);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }

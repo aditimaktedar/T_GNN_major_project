@@ -1,11 +1,27 @@
 import React from 'react';
 import './DrugPairCard.css';
 
-export function DrugPairCard({ drug1, drug2, onRunEvaluation, isEvaluating }) {
+const ACCENT_COLORS = [
+  'blue', 'pink', 'purple', 'amber', 'emerald', 'teal'
+];
+
+export function DrugPairCard({ selectedDrugs = [], evaluationData, onRunEvaluation, isEvaluating }) {
+  const pairs = evaluationData?.pairs || [];
+  const isMultiDrug = selectedDrugs.length >= 3;
+
   return (
     <div className="screenshot-card appointments-card">
+      {/* Top Header Row */}
       <div className="card-top-title-row">
-        <h3 className="card-main-title">Evaluated Drug Pair</h3>
+        <div className="title-group">
+          <h3 className="card-main-title">
+            {isMultiDrug ? 'Evaluated Regimen & Pairwise Matrix' : 'Evaluated Drug Pair'}
+          </h3>
+          <span className="selected-count-badge">
+            {selectedDrugs.length} Drugs Selected {pairs.length > 0 ? `• ${pairs.length} Pair Interactions` : ''}
+          </span>
+        </div>
+
         {onRunEvaluation && (
           <button 
             className={`run-eval-primary-btn ${isEvaluating ? 'evaluating' : ''}`}
@@ -15,67 +31,105 @@ export function DrugPairCard({ drug1, drug2, onRunEvaluation, isEvaluating }) {
             {isEvaluating ? (
               <>
                 <span className="eval-spinner"></span>
-                <span>Evaluating T-GNN...</span>
+                <span>Evaluating T-GNN Graph...</span>
               </>
             ) : (
               <>
                 <svg className="lightning-icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M13 2L3 14h7v8l10-12h-7z" />
                 </svg>
-                <span>Run DDI Evaluation</span>
+                <span>Run {selectedDrugs.length}+ Drug DDI Evaluation</span>
               </>
             )}
           </button>
         )}
       </div>
 
-      <div className="sub-section-block">
-        <span className="sub-section-label">SELECTED DRUG 1</span>
-        <div className="drug-appointment-item blue-highlight">
-          <div className="highlight-accent-line blue"></div>
-          <div className="item-content-group">
-            <div className="drug-header-title">
-              <strong className="drug-name-text">{drug1.name}</strong>
-              <span className="code-chip blue">{drug1.drugbank_id}</span>
-            </div>
-            <span className="item-subtext">Primary Target Agent • Administered Oral QD</span>
-          </div>
-          <div className="right-checks">
-            <svg className="double-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7M11 13l2 2 4-4" />
-            </svg>
-            <div className="mini-user-avatar">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </div>
-          </div>
+      {/* Selected Medications Grid/List */}
+      <div className="selected-meds-container">
+        <div className="sub-section-label">
+          SELECTED PATIENT MEDICATIONS ({selectedDrugs.length} ACTIVE IN REGIMEN)
+        </div>
+
+        <div className={`drug-items-grid ${selectedDrugs.length > 3 ? 'compact-grid' : ''}`}>
+          {selectedDrugs.map((drug, index) => {
+            const colorScheme = ACCENT_COLORS[index % ACCENT_COLORS.length];
+            return (
+              <div 
+                key={drug.id || index} 
+                className={`drug-appointment-item ${colorScheme}-highlight`}
+              >
+                <div className={`highlight-accent-line ${colorScheme}`}></div>
+                <div className="item-content-group">
+                  <div className="drug-header-title">
+                    <strong className="drug-name-text">{drug.name}</strong>
+                    <span className={`code-chip ${colorScheme}`}>{drug.id}</span>
+                  </div>
+                  <span className="item-subtext">
+                    Drug #{index + 1} &bull; {drug.dosage || '40 mg'} {drug.frequency || 'QD'}
+                  </span>
+                </div>
+                <div className="right-checks">
+                  <span className="drug-num-badge">{index + 1}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div className="sub-section-block">
-        <span className="sub-section-label">SELECTED DRUG 2</span>
-        <div className="drug-appointment-item pink-highlight">
-          <div className="highlight-accent-line pink"></div>
-          <div className="item-content-group">
-            <div className="drug-header-title">
-              <strong className="drug-name-text">{drug2.name}</strong>
-              <span className="code-chip pink">{drug2.drugbank_id}</span>
+      {/* 3+ Drug Pairwise Interaction Matrix */}
+      {pairs.length > 0 && (
+        <div className="pairwise-matrix-section">
+          <div className="matrix-header-row">
+            <h4 className="matrix-title">
+              Pairwise Drug-Drug Interaction Breakdown ({pairs.length} Pairs Analyzed)
+            </h4>
+            <div className="matrix-summary-pills">
+              {evaluationData?.majorCount > 0 && (
+                <span className="matrix-pill major">{evaluationData.majorCount} Major Risk</span>
+              )}
+              {evaluationData?.modCount > 0 && (
+                <span className="matrix-pill moderate">{evaluationData.modCount} Moderate Risk</span>
+              )}
+              {evaluationData?.lowCount > 0 && (
+                <span className="matrix-pill low">{evaluationData.lowCount} Low Risk</span>
+              )}
             </div>
-            <span className="item-subtext">Secondary Co-administered Agent • Administered Oral QAM</span>
           </div>
-          <div className="right-checks">
-            <svg className="double-check-icon pink" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7M11 13l2 2 4-4" />
-            </svg>
-            <div className="mini-user-avatar pink">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </div>
+
+          <div className="pairwise-cards-list">
+            {pairs.map((pair, idx) => (
+              <div key={idx} className={`pair-breakdown-card severity-${pair.severity.toLowerCase()}`}>
+                <div className="pair-card-top">
+                  <div className="pair-drugs-names">
+                    <span className="pair-drug-badge">{pair.drug1.name}</span>
+                    <span className="pair-arrow">&harr;</span>
+                    <span className="pair-drug-badge">{pair.drug2.name}</span>
+                  </div>
+                  <div className="pair-metrics">
+                    <span className={`pair-sev-tag ${pair.severity.toLowerCase()}`}>
+                      {pair.severity}
+                    </span>
+                    <span className="pair-prob-val">
+                      {Math.round(pair.probability * 100)}% Risk
+                    </span>
+                  </div>
+                </div>
+
+                {pair.mechanism && (
+                  <div className="pair-card-mechanism">
+                    <span className="mech-label">Mechanism:</span> {pair.mechanism}
+                  </div>
+                )}
+                {pair.summary && (
+                  <p className="pair-card-summary">{pair.summary}</p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

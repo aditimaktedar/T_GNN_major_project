@@ -10,6 +10,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .gnn-source-tag {
@@ -17,8 +18,8 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--primary-blue);
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--soft-blue-bg);
+  border: 1px solid var(--soft-blue-border);
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
 }
@@ -30,7 +31,7 @@
 }
 
 .prediction-box {
-  background: #f8fafc;
+  background: var(--bg-hover);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-btn);
   padding: 1rem;
@@ -52,21 +53,35 @@
   gap: 0.4rem;
   padding: 0.4rem 0.75rem;
   border-radius: var(--radius-pill);
-  font-size: 0.85rem;
+  font-size: 0.825rem;
   font-weight: 700;
+  width: fit-content;
 }
 
 .status-pill-badge.yes {
   background: var(--severity-major-bg);
-  color: #dc2626;
-  border: 1px solid #fca5a5;
+  color: var(--severity-major-text);
+  border: 1px solid var(--severity-major-border);
+}
+
+.status-pill-badge.no {
+  background: var(--soft-emerald-bg);
+  color: var(--soft-emerald-text);
+  border: 1px solid var(--soft-emerald-border);
 }
 
 .pill-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #dc2626;
+  background: currentColor;
+}
+
+.poly-pairs-subtext,
+.highest-pair-subtext {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
 }
 
 .prob-text-group {
@@ -90,7 +105,7 @@
 .prob-progress-track {
   width: 100%;
   height: 6px;
-  background: #e2e8f0;
+  background: var(--border-card);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -110,10 +125,22 @@
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 800;
+  width: fit-content;
 }
 
-.severity-flag-badge.major {
-  background: #dc2626;
+.severity-flag-badge.major,
+.severity-flag-badge.critical {
+  background: var(--severity-major-border);
+  color: #ffffff;
+}
+
+.severity-flag-badge.moderate {
+  background: var(--soft-amber-border);
+  color: #ffffff;
+}
+
+.severity-flag-badge.low {
+  background: var(--soft-emerald-border);
   color: #ffffff;
 }
 
