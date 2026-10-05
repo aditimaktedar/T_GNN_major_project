@@ -1,0 +1,10 @@
+task,dataset,split,model,accuracy,micro_f1,macro_f1,auroc,auprc,status
+Presence,MIMIC-IV 2.1,Pair-disjoint,Temporal MLP,0.5346,0.5346,0.4666,0.5251,0.1947,baseline
+Presence,MIMIC-IV 2.1,Pair-disjoint,TemporalDDI-GNN v1,0.5,0.5,0.4516,0.5312,0.1967,primary pair-disjoint
+Presence,MIMIC-IV 2.1,Pair-disjoint,TemporalDDI-GNN v3,0.9897,0.9897,0.9825,0.9988,0.9956,known-drug transductive result; audit-qualified
+Presence,MIMIC-IV 2.1,Pair-disjoint,Positive-edge graph-only GNN,0.9725,,0.9283,0.9957,0.9599,ablation
+Presence,MIMIC-IV 2.1,Pair-disjoint,Degree-preserving rewired GNN,0.9726,,0.9286,0.9956,0.9593,topology control
+Presence,MIMIC-IV 2.1,Pair-disjoint,Drug embedding-only,0.9704,,0.9187,0.992,0.9311,ablation
+Presence,MIMIC-IV 2.1,Pair-disjoint,"TemporalDDI-GNN v3, shuffled labels",0.7398,,0.4921,0.5106,0.1008,negative control
+Presence,MIMIC-IV 2.1,Unseen-drug,Drug embedding-only,0.8456,,0.507,0.5156,0.1079,cold-start
+Presence,MIMIC-IV 2.1,Unseen-drug,TemporalDDI-GNN,0.9031,,0.4745,0.4712,0.0906,cold-start

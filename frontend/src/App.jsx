@@ -12,9 +12,9 @@ import {
   discontinueMedicationOrder, 
   evaluateRegimenDDI 
 } from './api/client';
-
+ 
 const MAX_MEDICATIONS = 15;
-
+ 
 const fallbackPatient = {
   mrn: "MRN-9842-7019",
   name: "Eleanor Vance",
@@ -42,18 +42,18 @@ const fallbackPatient = {
     { id: "DB00381", name: "Amlodipine", dosage: "5 mg", frequency: "QD", route: "Oral" },
   ],
 };
-
+ 
 export default function App() {
   const [patient, setPatient] = useState(fallbackPatient);
   const [activeNavTab, setActiveNavTab] = useState('overview');
   const [activeSegment, setActiveSegment] = useState('medications');
   const [isLoadingDB, setIsLoadingDB] = useState(true);
-
+ 
   // Dark Mode state with localStorage persistence
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('tgnn_theme') === 'dark';
   });
-
+ 
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
       const next = !prev;
@@ -61,18 +61,19 @@ export default function App() {
       return next;
     });
   };
-
+ 
   // 3+ Drug Selection State
   const [selectedDrugs, setSelectedDrugs] = useState([]);
-
+ 
   // Evaluated data state + loading state
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [apiStatus, setApiStatus] = useState('checking'); // 'connected' | 'offline' | 'checking'
   const [activeEvaluatedData, setActiveEvaluatedData] = useState(null);
-
+ 
   const [newMedName, setNewMedName] = useState('');
   const [newMedId, setNewMedId] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
-
+ 
   // Section refs for smooth scrolling navigation
   const overviewRef = useRef(null);
   const medsRef = useRef(null);
@@ -80,7 +81,15 @@ export default function App() {
   const predictionRef = useRef(null);
   const ragRef = useRef(null);
   const evidenceRef = useRef(null);
-
+ 
+  // Check backend health on mount
+  useEffect(() => {
+    fetch('/api/health')
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then(() => setApiStatus('connected'))
+      .catch(() => setApiStatus('offline'));
+  }, []);
+ 
   // Load Patient Profile and Active Regimen from Backend Database API
   useEffect(() => {
     async function loadDatabaseData() {
@@ -91,7 +100,7 @@ export default function App() {
           setPatient(dbPatient);
           const initialSelected = dbPatient.medications.slice(0, 3);
           setSelectedDrugs(initialSelected);
-
+ 
           // Initial evaluation query to database
           const evalResult = await evaluateRegimenDDI(initialSelected);
           setActiveEvaluatedData(evalResult);
@@ -105,16 +114,16 @@ export default function App() {
     }
     loadDatabaseData();
   }, []);
-
+ 
   const handleSelectNavTab = (tabId) => {
     setActiveNavTab(tabId);
-
+ 
     if (tabId === 'overview' || tabId === 'medications' || tabId === 'ddi') {
       setActiveSegment('medications');
     } else if (tabId === 'rag' || tabId === 'evidence') {
       setActiveSegment('rag');
     }
-
+ 
     const refMap = {
       overview: medsRef,
       medications: medsRef,
@@ -122,7 +131,7 @@ export default function App() {
       rag: ragRef,
       evidence: evidenceRef,
     };
-
+ 
     setTimeout(() => {
       const targetRef = refMap[tabId];
       if (targetRef && targetRef.current) {
@@ -130,32 +139,33 @@ export default function App() {
       }
     }, 100);
   };
-
+ 
   // Trigger polypharmacy DDI evaluation via Database API
   const handleRunEvaluation = async () => {
     if (selectedDrugs.length < 2) {
       alert("Please select at least 2 medications from the MAR table to run DDI interaction evaluation.");
       return;
     }
-
+ 
     setIsEvaluating(true);
-
+ 
     try {
       const evaluationResult = await evaluateRegimenDDI(selectedDrugs);
       setActiveEvaluatedData(evaluationResult);
+      setApiStatus('connected');
     } catch (err) {
       console.error("Evaluation API failed:", err);
+      setApiStatus('offline');
       alert("Evaluation request failed. Please check backend database connectivity.");
     } finally {
       setIsEvaluating(false);
-
-      // Scroll to prediction results
+ 
       if (predictionRef.current) {
         predictionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
   };
-
+ 
   // Update Patient Profile in Database
   const handleUpdatePatient = async (updatedProfile) => {
     try {
@@ -176,7 +186,7 @@ export default function App() {
       }));
     }
   };
-
+ 
   // Add Medication Order to Database (Supports up to 15 max model capacity)
   const handleAddMedication = async (e) => {
     e.preventDefault();
@@ -185,7 +195,7 @@ export default function App() {
       alert(`Maximum T-GNN model capacity of ${MAX_MEDICATIONS} active medications reached.`);
       return;
     }
-
+ 
     const drugId = newMedId.trim() || `DB${Math.floor(10000 + Math.random() * 90000)}`;
     const newMedPayload = {
       drugbank_id: drugId.toUpperCase(),
@@ -194,7 +204,7 @@ export default function App() {
       frequency: "QD (Daily)",
       route: "Oral",
     };
-
+ 
     try {
       const addedMed = await addMedicationOrder(newMedPayload);
       const formattedMed = {
@@ -205,7 +215,7 @@ export default function App() {
         frequency: addedMed.frequency,
         route: addedMed.route,
       };
-
+ 
       setPatient((prev) => ({
         ...prev,
         medications: [...prev.medications, formattedMed],
@@ -220,17 +230,17 @@ export default function App() {
       alert(`Error adding medication: ${err.message}`);
     }
   };
-
+ 
   // Remove Medication Order from Database
   const handleRemoveMedication = async (medId) => {
     if (patient.medications.length <= 2) {
       alert("A minimum of 2 medications is required in the patient regimen for DDI analysis.");
       return;
     }
-
+ 
     const targetMed = patient.medications.find(m => m.id === medId || m.db_id === medId);
     const numericId = targetMed?.db_id || medId;
-
+ 
     try {
       await discontinueMedicationOrder(numericId);
       const updatedMeds = patient.medications.filter((m) => m.id !== medId && m.db_id !== numericId);
@@ -238,7 +248,7 @@ export default function App() {
         ...prev,
         medications: updatedMeds,
       }));
-
+ 
       if (selectedDrugs.some((m) => m.id === medId || m.db_id === numericId)) {
         const updatedSelected = selectedDrugs.filter((m) => m.id !== medId && m.db_id !== numericId);
         if (updatedSelected.length >= 2) {
@@ -254,7 +264,7 @@ export default function App() {
       setPatient((prev) => ({ ...prev, medications: updatedMeds }));
     }
   };
-
+ 
   // Toggle selection for 3+ multi-drug evaluation
   const toggleSelectDrug = (med) => {
     const isSelected = selectedDrugs.some((m) => m.id === med.id);
@@ -268,7 +278,7 @@ export default function App() {
       setSelectedDrugs([...selectedDrugs, med]);
     }
   };
-
+ 
   // Select All / Deselect All Helper
   const handleSelectAllToggle = () => {
     if (selectedDrugs.length === patient.medications.length) {
@@ -277,10 +287,10 @@ export default function App() {
       setSelectedDrugs([...patient.medications]);
     }
   };
-
+ 
   const showMedicationsSegment = activeSegment === 'medications' || activeSegment === 'all';
   const showRAGSegment = activeSegment === 'rag' || activeSegment === 'all';
-
+ 
   return (
     <div className={`app-layout screenshot-theme ${darkMode ? 'dark-theme' : ''}`}>
       {/* Top Navbar */}
@@ -292,7 +302,7 @@ export default function App() {
             <span className="live-db-dot"></span>
           </span>
         </div>
-
+ 
         <div className="nav-actions">
           {/* Small Dark Mode Toggle Button */}
           <button 
@@ -319,8 +329,23 @@ export default function App() {
             )}
           </button>
         </div>
+ 
+        {/* API connection status indicator */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <span style={{
+            display: 'inline-block',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: apiStatus === 'connected' ? '#10b981' : '#f59e0b',
+            boxShadow: apiStatus === 'connected' ? '0 0 8px #10b981' : 'none'
+          }}></span>
+          <span style={{ color: '#e2e8f0', fontWeight: 500 }}>
+            {apiStatus === 'connected' ? 'Live T-GNN v2 + RAG API' : apiStatus === 'checking' ? 'Connecting…' : 'API Offline'}
+          </span>
+        </div>
       </header>
-
+ 
       {/* Main 2-Column Dashboard Grid */}
       <main className="dashboard-grid-container" ref={overviewRef}>
         {/* Left Column: Patient Profile Sidebar */}
@@ -332,7 +357,7 @@ export default function App() {
             onSelectNavTab={handleSelectNavTab}
           />
         </aside>
-
+ 
         {/* Right Column: Main Content Area */}
         <section className="right-main-col">
           
@@ -347,7 +372,7 @@ export default function App() {
                 <span className="segment-title">Medications & DDI Evaluation</span>
                 <span className="segment-badge">{patient.medications.length} Meds</span>
               </button>
-
+ 
               <button 
                 className={`segment-tab ${activeSegment === 'rag' ? 'active' : ''}`}
                 onClick={() => setActiveSegment('rag')}
@@ -356,7 +381,7 @@ export default function App() {
                 <span className="segment-title">RAG Implementation & Evidence</span>
                 
               </button>
-
+ 
               <button 
                 className={`segment-tab ${activeSegment === 'all' ? 'active' : ''}`}
                 onClick={() => setActiveSegment('all')}
@@ -366,7 +391,7 @@ export default function App() {
               </button>
             </div>
           </div>
-
+ 
           {/* SEGMENT 1: MEDICATIONS & DDI EVALUATION */}
           {showMedicationsSegment && (
             <>
@@ -385,7 +410,7 @@ export default function App() {
                         Fetched from SQLite Database • Select 2, 3+ medications below to evaluate polypharmacy DDI risk
                       </span>
                     </div>
-
+ 
                     <div className="mar-header-actions">
                       <button 
                         className="select-all-btn"
@@ -393,7 +418,7 @@ export default function App() {
                       >
                         {selectedDrugs.length === patient.medications.length ? 'Deselect Extra' : `Select All (${patient.medications.length})`}
                       </button>
-
+ 
                       {patient.medications.length < MAX_MEDICATIONS && (
                         <button 
                           className="add-med-btn-screenshot"
@@ -404,7 +429,7 @@ export default function App() {
                       )}
                     </div>
                   </div>
-
+ 
                   {showAddForm && (
                     <form className="add-med-inline-form" onSubmit={handleAddMedication}>
                       <input 
@@ -423,7 +448,7 @@ export default function App() {
                       <button type="submit" className="confirm-add-blue-btn">Save to DB</button>
                     </form>
                   )}
-
+ 
                   <div className="mar-table-wrapper-screenshot">
                     <table className="screenshot-mar-table">
                       <thead>
@@ -481,7 +506,7 @@ export default function App() {
                   </div>
                 </div>
               </div>
-
+ 
               {/* 2. Evaluated Multi-Drug Regimen Section */}
               <div className="main-panel-step" ref={pairRef} id="sec-pair">
                 <DrugPairCard 
@@ -491,7 +516,7 @@ export default function App() {
                   isEvaluating={isEvaluating}
                 />
               </div>
-
+ 
               {/* 3. DDI Risk Prediction Panel */}
               {activeEvaluatedData && (
                 <div className="main-panel-step" ref={predictionRef} id="sec-prediction">
@@ -504,7 +529,7 @@ export default function App() {
               )}
             </>
           )}
-
+ 
           {/* SEGMENT 2: RAG IMPLEMENTATION & CLINICAL EVIDENCE */}
           {showRAGSegment && activeEvaluatedData && (
             <div className="main-panel-step" ref={ragRef} id="sec-rag">
@@ -522,21 +547,21 @@ export default function App() {
                   </span>
                 </div>
               )}
-
+ 
               {/* 4. History & Clinical Evidence Container */}
               <div className="screenshot-card history-section-card">
                 <div className="history-card-header">
                   <h3 className="card-main-title">History & Clinical Evidence</h3>
                 </div>
-
+ 
                 <div className="history-timeline-container">
                   <div className="timeline-vertical-line"></div>
-
+ 
                   {/* RAG Explanation Timeline Node */}
                   <div>
                     <RAGExplanation ragData={activeEvaluatedData.rag_explanation} />
                   </div>
-
+ 
                   {/* Multi-Database Evidence Tree Timeline Node */}
                   <div ref={evidenceRef} id="sec-evidence">
                     <EvidenceTree 
@@ -548,9 +573,10 @@ export default function App() {
               </div>
             </div>
           )}
-
+ 
         </section>
       </main>
     </div>
   );
 }
+ 
