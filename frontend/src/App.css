@@ -432,10 +432,30 @@
   border-radius: 6px;
   border: 1px solid var(--border-card);
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.add-med-preset-select {
+  flex: 1.5;
+  min-width: 220px;
+  background: var(--input-bg);
+  color: var(--text-dark);
+  border: 1px solid var(--input-border);
+  padding: 0.4rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.add-med-preset-select:focus {
+  border-color: var(--primary-blue);
 }
 
 .add-med-inline-form input {
   flex: 1;
+  min-width: 140px;
   background: var(--input-bg);
   color: var(--text-dark);
   border: 1px solid var(--input-border);

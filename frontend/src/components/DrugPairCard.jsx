@@ -1,13 +1,26 @@
 import React from 'react';
 import './DrugPairCard.css';
+import { PRESET_DRUG_PAIRS } from '../data/commonMedications';
 
 const ACCENT_COLORS = [
   'blue', 'pink', 'purple', 'amber', 'emerald', 'teal'
 ];
 
-export function DrugPairCard({ selectedDrugs = [], evaluationData, onRunEvaluation, isEvaluating }) {
+export function DrugPairCard({ 
+  selectedDrugs = [], 
+  availableMeds = [], 
+  evaluationData, 
+  onRunEvaluation, 
+  isEvaluating,
+  onSelectDrug1,
+  onSelectDrug2,
+  onSelectPresetPair
+}) {
   const pairs = evaluationData?.pairs || [];
   const isMultiDrug = selectedDrugs.length >= 3;
+
+  const drug1 = selectedDrugs[0] || availableMeds[0] || {};
+  const drug2 = selectedDrugs[1] || availableMeds[1] || {};
 
   return (
     <div className="screenshot-card appointments-card">
@@ -42,6 +55,65 @@ export function DrugPairCard({ selectedDrugs = [], evaluationData, onRunEvaluati
               </>
             )}
           </button>
+        )}
+      </div>
+
+      {/* Medication Dropdown Selection Toolbar */}
+      <div className="drug-dropdown-toolbar">
+        <div className="dropdown-tool-group">
+          <label className="dropdown-label font-bold">
+            <span className="lbl-icon">💊</span> Select Drug A:
+          </label>
+          <select 
+            className="med-select-dropdown"
+            value={drug1.id || drug1.drugbank_id || ''}
+            onChange={(e) => onSelectDrug1 && onSelectDrug1(e.target.value)}
+          >
+            {availableMeds.map((med) => (
+              <option key={med.id || med.drugbank_id} value={med.id || med.drugbank_id}>
+                {med.name} ({med.id || med.drugbank_id})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <span className="dropdown-vs-badge">VS</span>
+
+        <div className="dropdown-tool-group">
+          <label className="dropdown-label font-bold">
+            <span className="lbl-icon">💊</span> Select Drug B:
+          </label>
+          <select 
+            className="med-select-dropdown"
+            value={drug2.id || drug2.drugbank_id || ''}
+            onChange={(e) => onSelectDrug2 && onSelectDrug2(e.target.value)}
+          >
+            {availableMeds.map((med) => (
+              <option key={med.id || med.drugbank_id} value={med.id || med.drugbank_id}>
+                {med.name} ({med.id || med.drugbank_id})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {onSelectPresetPair && (
+          <div className="dropdown-tool-group preset-group">
+            <label className="dropdown-label font-bold">
+              <span className="lbl-icon">⚡</span> Quick DDI Presets:
+            </label>
+            <select 
+              className="med-select-dropdown preset-dropdown"
+              defaultValue=""
+              onChange={(e) => e.target.value && onSelectPresetPair(e.target.value)}
+            >
+              <option value="" disabled>-- Choose Common Clinical Pair --</option>
+              {PRESET_DRUG_PAIRS.map((preset, idx) => (
+                <option key={idx} value={preset.pair.join('+')}>
+                  {preset.label}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
       </div>
 

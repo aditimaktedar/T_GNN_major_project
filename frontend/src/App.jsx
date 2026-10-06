@@ -5,6 +5,7 @@ import { DrugPairCard } from './components/DrugPairCard';
 import { PredictionPanel } from './components/PredictionPanel';
 import { RAGExplanation } from './components/RAGExplanation';
 import { EvidenceTree } from './components/EvidenceTree';
+import { COMMON_MEDICATIONS } from './data/commonMedications';
 import { 
   fetchPatientProfile, 
   updatePatientProfile, 
@@ -278,7 +279,65 @@ export default function App() {
       setSelectedDrugs([...selectedDrugs, med]);
     }
   };
- 
+
+  // Dropdown Auto-Fill Handler for Add Medication Form
+  const handlePresetDropdownChange = (e) => {
+    const selectedId = e.target.value;
+    if (!selectedId) return;
+    const found = COMMON_MEDICATIONS.find((m) => m.id === selectedId);
+    if (found) {
+      setNewMedName(found.name);
+      setNewMedId(found.id);
+    }
+  };
+
+  // Dropdown Selection Handlers for Drug 1 & Drug 2 in DrugPairCard
+  const handleSelectDrug1 = (drugId) => {
+    const found = patient.medications.find((m) => (m.id || m.drugbank_id) === drugId);
+    if (found) {
+      const currentDrug2 = selectedDrugs[1] || patient.medications[1];
+      const remaining = selectedDrugs.slice(2);
+      setSelectedDrugs([found, currentDrug2, ...remaining.filter(m => (m.id || m.drugbank_id) !== drugId)]);
+    }
+  };
+
+  const handleSelectDrug2 = (drugId) => {
+    const found = patient.medications.find((m) => (m.id || m.drugbank_id) === drugId);
+    if (found) {
+      const currentDrug1 = selectedDrugs[0] || patient.medications[0];
+      const remaining = selectedDrugs.slice(2);
+      setSelectedDrugs([currentDrug1, found, ...remaining.filter(m => (m.id || m.drugbank_id) !== drugId)]);
+    }
+  };
+
+  const handleSelectPresetPair = (pairString) => {
+    const [id1, id2] = pairString.split('+');
+    let d1 = patient.medications.find((m) => (m.id || m.drugbank_id) === id1);
+    let d2 = patient.medications.find((m) => (m.id || m.drugbank_id) === id2);
+
+    const medsToAdd = [];
+    if (!d1) {
+      const preset1 = COMMON_MEDICATIONS.find((m) => m.id === id1);
+      if (preset1) medsToAdd.push({ id: preset1.id, drugbank_id: preset1.id, name: preset1.name, dosage: preset1.dosage, frequency: preset1.frequency, route: preset1.route });
+    }
+    if (!d2) {
+      const preset2 = COMMON_MEDICATIONS.find((m) => m.id === id2);
+      if (preset2) medsToAdd.push({ id: preset2.id, drugbank_id: preset2.id, name: preset2.name, dosage: preset2.dosage, frequency: preset2.frequency, route: preset2.route });
+    }
+
+    if (medsToAdd.length > 0) {
+      setPatient((prev) => {
+        const newMedsList = [...prev.medications, ...medsToAdd];
+        d1 = newMedsList.find((m) => (m.id || m.drugbank_id) === id1);
+        d2 = newMedsList.find((m) => (m.id || m.drugbank_id) === id2);
+        if (d1 && d2) setSelectedDrugs([d1, d2]);
+        return { ...prev, medications: newMedsList };
+      });
+    } else if (d1 && d2) {
+      setSelectedDrugs([d1, d2]);
+    }
+  };
+
   // Select All / Deselect All Helper
   const handleSelectAllToggle = () => {
     if (selectedDrugs.length === patient.medications.length) {
@@ -287,7 +346,7 @@ export default function App() {
       setSelectedDrugs([...patient.medications]);
     }
   };
- 
+
   const showMedicationsSegment = activeSegment === 'medications' || activeSegment === 'all';
   const showRAGSegment = activeSegment === 'rag' || activeSegment === 'all';
  
@@ -432,6 +491,19 @@ export default function App() {
  
                   {showAddForm && (
                     <form className="add-med-inline-form" onSubmit={handleAddMedication}>
+                      <select 
+                        className="add-med-preset-select"
+                        defaultValue=""
+                        onChange={handlePresetDropdownChange}
+                      >
+                        <option value="" disabled>-- Choose from Clinical Drug Database --</option>
+                        {COMMON_MEDICATIONS.map((med) => (
+                          <option key={med.id} value={med.id}>
+                            {med.name} ({med.id}) &bull; {med.category}
+                          </option>
+                        ))}
+                      </select>
+
                       <input 
                         type="text" 
                         placeholder="Drug Name (e.g., Lisinopril)" 
@@ -511,9 +583,13 @@ export default function App() {
               <div className="main-panel-step" ref={pairRef} id="sec-pair">
                 <DrugPairCard 
                   selectedDrugs={selectedDrugs}
+                  availableMeds={patient.medications}
                   evaluationData={activeEvaluatedData}
                   onRunEvaluation={handleRunEvaluation}
                   isEvaluating={isEvaluating}
+                  onSelectDrug1={handleSelectDrug1}
+                  onSelectDrug2={handleSelectDrug2}
+                  onSelectPresetPair={handleSelectPresetPair}
                 />
               </div>
  
