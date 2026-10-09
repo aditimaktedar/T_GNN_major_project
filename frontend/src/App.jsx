@@ -13,6 +13,7 @@ import {
   discontinueMedicationOrder, 
   evaluateRegimenDDI 
 } from './api/client';
+import { generatePdfReport } from './utils/generatePdfReport';
  
 const MAX_MEDICATIONS = 15;
  
@@ -363,6 +364,18 @@ export default function App() {
         </div>
  
         <div className="nav-actions">
+          {/* Download Clinical PDF Report Button */}
+          <button 
+            className="download-report-btn"
+            onClick={() => generatePdfReport(patient, selectedDrugs, activeEvaluatedData)}
+            title="Download Clinical PDF Report"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Download Report</span>
+          </button>
+
           {/* Small Dark Mode Toggle Button */}
           <button 
             className="theme-toggle-btn"
