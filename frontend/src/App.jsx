@@ -14,10 +14,18 @@ import {
   evaluateRegimenDDI,
   fetchHealthStatus,
 } from './api/client';
-import { AllSectionsIcon, MedicationsIcon, RagIcon } from './components/SegmentIcons';
+import { RagIcon } from './components/SegmentIcons';
 import { generatePdfReport } from './utils/generatePdfReport';
- 
+import { OverviewSection } from './components/OverviewSection';
+import { SourceAuditPanel } from './components/SourceAuditPanel';
+
 const MAX_MEDICATIONS = 15;
+const NAV_SECTIONS = ['overview', 'medications', 'ddi', 'rag', 'evidence'];
+
+function sectionFromHash() {
+  const id = window.location.hash.replace(/^#/, '');
+  return NAV_SECTIONS.includes(id) ? id : 'overview';
+}
  
 const fallbackPatient = {
   mrn: "MRN-9842-7019",
@@ -49,9 +57,11 @@ const fallbackPatient = {
  
 export default function App() {
   const [patient, setPatient] = useState(fallbackPatient);
-  const [activeNavTab, setActiveNavTab] = useState('overview');
-  const [activeSegment, setActiveSegment] = useState('medications');
+  const [activeNavTab, setActiveNavTab] = useState(() =>
+    typeof window !== 'undefined' ? sectionFromHash() : 'overview'
+  );
   const [isLoadingDB, setIsLoadingDB] = useState(true);
+  const [engineHealth, setEngineHealth] = useState(null);
  
   // Dark Mode state with localStorage persistence
   const [darkMode, setDarkMode] = useState(() => {
@@ -81,21 +91,27 @@ export default function App() {
   const [newMedId, setNewMedId] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
  
-  // Section refs for smooth scrolling navigation
-  const overviewRef = useRef(null);
-  const medsRef = useRef(null);
-  const pairRef = useRef(null);
-  const predictionRef = useRef(null);
-  const ragRef = useRef(null);
-  const evidenceRef = useRef(null);
- 
   // Check backend health on mount
   useEffect(() => {
     fetchHealthStatus()
       .then((health) => {
+        setEngineHealth(health);
         setApiStatus(health?.engine?.status === 'healthy' ? 'connected' : 'connected');
       })
       .catch(() => setApiStatus('offline'));
+  }, []);
+
+  useEffect(() => {
+    const syncFromHash = () => setActiveNavTab(sectionFromHash());
+    window.addEventListener('hashchange', syncFromHash);
+    window.addEventListener('popstate', syncFromHash);
+    if (!window.location.hash) {
+      window.history.replaceState({ section: 'overview' }, '', '#overview');
+    }
+    return () => {
+      window.removeEventListener('hashchange', syncFromHash);
+      window.removeEventListener('popstate', syncFromHash);
+    };
   }, []);
  
   // Load Patient Profile and Active Regimen from Backend Database API
@@ -127,28 +143,13 @@ export default function App() {
   }, []);
  
   const handleSelectNavTab = (tabId) => {
+    if (!NAV_SECTIONS.includes(tabId)) return;
     setActiveNavTab(tabId);
- 
-    if (tabId === 'overview' || tabId === 'medications' || tabId === 'ddi') {
-      setActiveSegment('medications');
-    } else if (tabId === 'rag' || tabId === 'evidence') {
-      setActiveSegment('rag');
+    const hash = `#${tabId}`;
+    if (window.location.hash !== hash) {
+      window.history.pushState({ section: tabId }, '', hash);
     }
- 
-    const refMap = {
-      overview: medsRef,
-      medications: medsRef,
-      ddi: predictionRef,
-      rag: ragRef,
-      evidence: evidenceRef,
-    };
- 
-    setTimeout(() => {
-      const targetRef = refMap[tabId];
-      if (targetRef && targetRef.current) {
-        targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
  
   // Trigger polypharmacy DDI evaluation via Database API
@@ -173,6 +174,7 @@ export default function App() {
       const evaluationResult = await evaluateRegimenDDI(selectedDrugs, { signal: controller.signal });
       setActiveEvaluatedData(evaluationResult);
       setApiStatus('connected');
+      handleSelectNavTab('ddi');
     } catch (err) {
       if (err.name === 'AbortError') return;
       console.error("Evaluation API failed:", err);
@@ -180,10 +182,6 @@ export default function App() {
       setApiStatus('offline');
     } finally {
       setIsEvaluating(false);
- 
-      if (predictionRef.current) {
-        predictionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
     }
   };
  
@@ -366,9 +364,8 @@ export default function App() {
     }
   };
 
-  const showMedicationsSegment = activeSegment === 'medications' || activeSegment === 'all';
-  const showRAGSegment = activeSegment === 'rag' || activeSegment === 'all';
- 
+  const showWorkflowHints = activeNavTab === 'medications' || activeNavTab === 'ddi';
+
   return (
     <div className={`app-layout screenshot-theme ${darkMode ? 'dark-theme' : ''}`}>
       {/* Top Navbar */}
@@ -437,7 +434,7 @@ export default function App() {
       </header>
  
       {/* Main 2-Column Dashboard Grid */}
-      <main className="dashboard-grid-container" ref={overviewRef}>
+      <main className="dashboard-grid-container">
         {/* Left Column: Patient Profile Sidebar */}
         <aside className="left-sidebar-col">
           <PatientCard 
@@ -449,55 +446,25 @@ export default function App() {
         </aside>
  
         {/* Right Column: Main Content Area */}
-        <section className="right-main-col">
-          
-          {/* SEGMENTED CONTROL HEADER */}
-          <div className="segmented-control-bar">
-            <div className="segmented-control">
-              <button 
-                className={`segment-tab ${activeSegment === 'medications' ? 'active' : ''}`}
-                onClick={() => setActiveSegment('medications')}
-              >
-                <MedicationsIcon />
-                <span className="segment-title">Medications & DDI Evaluation</span>
-                <span className="segment-badge">{patient.medications.length} Meds</span>
-              </button>
- 
-              <button 
-                className={`segment-tab ${activeSegment === 'rag' ? 'active' : ''}`}
-                onClick={() => setActiveSegment('rag')}
-              >
-                <RagIcon />
-                <span className="segment-title">Evidence & explanation</span>
-                
-              </button>
- 
-              <button 
-                className={`segment-tab ${activeSegment === 'all' ? 'active' : ''}`}
-                onClick={() => setActiveSegment('all')}
-              >
-                <AllSectionsIcon />
-                <span className="segment-title">All Sections</span>
-              </button>
-            </div>
-          </div>
-
+        <section className="right-main-col" aria-live="polite">
           <p className="clinical-disclaimer" role="note">
             This tool shows research-model predictions and retrieved reference text. It is not a clinical
             diagnosis, prescribing guide, or substitute for a licensed clinician.
           </p>
 
-          <ol className="workflow-steps" aria-label="Evaluation workflow">
-            <li>
-              <span className="workflow-step-num">1.</span> Select two or more medications in the table
-            </li>
-            <li>
-              <span className="workflow-step-num">2.</span> Run interaction evaluation
-            </li>
-            <li>
-              <span className="workflow-step-num">3.</span> Review summary, then evidence if needed
-            </li>
-          </ol>
+          {showWorkflowHints && (
+            <ol className="workflow-steps" aria-label="Evaluation workflow">
+              <li>
+                <span className="workflow-step-num">1.</span> Select two or more medications in the table
+              </li>
+              <li>
+                <span className="workflow-step-num">2.</span> Run interaction evaluation
+              </li>
+              <li>
+                <span className="workflow-step-num">3.</span> Review summary, then evidence if needed
+              </li>
+            </ol>
+          )}
 
           {(loadNotice || evaluationError) && (
             <div className={`portal-alert ${evaluationError ? 'portal-alert-error' : 'portal-alert-warning'}`} role="alert">
@@ -512,12 +479,27 @@ export default function App() {
             </div>
           )}
 
-          {/* SEGMENT 1: MEDICATIONS & DDI EVALUATION */}
-          {showMedicationsSegment && (
-            <>
-              {/* 1. TOP MOST SECTION: Active Medications & MAR Regimen Table */}
-              <div className="main-panel-step" ref={medsRef} id="sec-medications">
+          {activeNavTab === 'overview' && (
+            <OverviewSection
+              patient={patient}
+              selectedDrugs={selectedDrugs}
+              evaluationData={activeEvaluatedData}
+              apiStatus={apiStatus}
+              isLoadingDB={isLoadingDB}
+              evaluationError={evaluationError}
+              onGoToSection={handleSelectNavTab}
+            />
+          )}
+
+          {activeNavTab === 'medications' && (
+              <div className="main-panel-step" id="sec-medications">
                 <div className="screenshot-card active-meds-top-card">
+                  <header className="section-page-header section-page-header-pad">
+                    <h2 className="section-page-title">Medications</h2>
+                    <p className="section-helper">
+                      Active regimen (MAR). Select drugs for evaluation, add orders, or discontinue medications.
+                    </p>
+                  </header>
                   <div className="mar-card-header">
                     <div className="header-left">
                       <div className="section-title-with-badge">
@@ -639,10 +621,18 @@ export default function App() {
                   </div>
                 </div>
               </div>
- 
-              {/* 2. Evaluated Multi-Drug Regimen Section */}
-              <div className="main-panel-step" ref={pairRef} id="sec-pair">
-                <DrugPairCard 
+          )}
+
+          {activeNavTab === 'ddi' && (
+            <>
+              <div className="main-panel-step" id="sec-pair">
+                <header className="section-page-header section-page-header-standalone">
+                  <h2 className="section-page-title">Interaction results</h2>
+                  <p className="section-helper">
+                    Run the temporal graph model on the selected regimen and review pairwise scores.
+                  </p>
+                </header>
+                <DrugPairCard
                   selectedDrugs={selectedDrugs}
                   availableMeds={patient.medications}
                   evaluationData={activeEvaluatedData}
@@ -653,9 +643,8 @@ export default function App() {
                   onSelectPresetPair={handleSelectPresetPair}
                 />
               </div>
- 
-              {/* 3. DDI Risk Prediction Panel */}
-              <div className="main-panel-step" ref={predictionRef} id="sec-prediction">
+
+              <div className="main-panel-step" id="sec-prediction">
                 {isEvaluating && !activeEvaluatedData ? (
                   <div className="screenshot-card portal-empty-state">
                     <p className="portal-empty-title">Running T-GNN + RAG evaluation</p>
@@ -670,57 +659,67 @@ export default function App() {
                 ) : (
                   <div className="screenshot-card portal-empty-state">
                     <p className="portal-empty-title">No evaluation results yet</p>
-                    <p className="portal-empty-copy">Select at least two medications and run DDI evaluation.</p>
+                    <p className="portal-empty-copy">
+                      Select at least two medications on the Medications page, then run interaction evaluation.
+                    </p>
                   </div>
                 )}
               </div>
             </>
           )}
- 
-          {/* SEGMENT 2: RAG IMPLEMENTATION & CLINICAL EVIDENCE */}
-          {showRAGSegment && activeEvaluatedData && (
-            <div className="main-panel-step" ref={ragRef} id="sec-rag">
-              {/* Quick Regimen Context Banner when viewing RAG segment */}
-              {activeSegment === 'rag' && (
-                <div className="screenshot-card rag-context-banner">
-                  <div className="banner-left">
-                    <RagIcon className="banner-icon-svg" />
-                    <div className="banner-text">
-                      <strong>Active RAG Regimen Context:</strong> {selectedDrugs.map(d => d.name).join(' + ')}
+
+          {activeNavTab === 'rag' && (
+            <div className="main-panel-step" id="sec-rag">
+              <header className="section-page-header section-page-header-standalone">
+                <h2 className="section-page-title">Evidence &amp; explanation</h2>
+                <p className="section-helper">
+                  Retrieved pharmacology context (RAG) for the latest evaluation. Expand sections for detail.
+                </p>
+              </header>
+              {!activeEvaluatedData ? (
+                <div className="screenshot-card portal-empty-state">
+                  <p className="portal-empty-title">No explanation available</p>
+                  <p className="portal-empty-copy">Run an interaction evaluation to populate RAG text.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="screenshot-card rag-context-banner">
+                    <div className="banner-left">
+                      <RagIcon className="banner-icon-svg" />
+                      <div className="banner-text">
+                        Regimen: {selectedDrugs.map((d) => d.name).join(' · ')}
+                      </div>
+                    </div>
+                    <span
+                      className={`banner-sev-pill ${activeEvaluatedData?.prediction?.severity?.toLowerCase()}`}
+                    >
+                      {activeEvaluatedData?.prediction?.severity} ·{' '}
+                      {Math.round((activeEvaluatedData?.prediction?.probability || 0) * 100)}% top score
+                    </span>
+                  </div>
+                  <div className="screenshot-card history-section-card rag-only-card">
+                    <div className="history-timeline-container rag-evidence-stack">
+                      <div className="timeline-vertical-line" />
+                      <RAGExplanation ragData={activeEvaluatedData.rag_explanation} />
+                      <EvidenceTree
+                        evidence={activeEvaluatedData.evidence}
+                        selectedDrugs={selectedDrugs}
+                      />
                     </div>
                   </div>
-                  <span className={`banner-sev-pill ${activeEvaluatedData?.prediction?.severity?.toLowerCase()}`}>
-                    {activeEvaluatedData?.prediction?.severity} SEVERITY ({Math.round((activeEvaluatedData?.prediction?.probability || 0) * 100)}% Risk)
-                  </span>
-                </div>
+                </>
               )}
- 
-              {/* 4. History & Clinical Evidence Container */}
-              <div className="screenshot-card history-section-card">
-                <div className="history-card-header">
-                  <h3 className="card-main-title">History & Clinical Evidence</h3>
-                </div>
- 
-                <div className="history-timeline-container">
-                  <div className="timeline-vertical-line"></div>
- 
-                  {/* RAG Explanation Timeline Node */}
-                  <div>
-                    <RAGExplanation ragData={activeEvaluatedData.rag_explanation} />
-                  </div>
- 
-                  {/* Multi-Database Evidence Tree Timeline Node */}
-                  <div ref={evidenceRef} id="sec-evidence">
-                    <EvidenceTree 
-                      evidence={activeEvaluatedData.evidence}
-                      selectedDrugs={selectedDrugs}
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
           )}
- 
+
+          {activeNavTab === 'evidence' && (
+            <SourceAuditPanel
+              evaluationData={activeEvaluatedData}
+              engineHealth={engineHealth}
+              apiStatus={apiStatus}
+            />
+          )}
+
         </section>
       </main>
     </div>

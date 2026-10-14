@@ -755,6 +755,30 @@
   max-width: 52rem;
 }
 
+.section-page-header-pad {
+  padding: 0 0 0.75rem;
+}
+
+.section-page-header-standalone {
+  margin-bottom: 0.75rem;
+}
+
+.section-page-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.rag-evidence-stack {
+  position: relative;
+  padding-left: 0.5rem;
+}
+
+.rag-only-card,
+.evidence-only-card {
+  padding: 1rem 1.25rem;
+}
+
 .portal-alert-success {
   background: var(--accent-soft-bg);
   border-color: var(--accent-soft-border);
