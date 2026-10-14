@@ -155,7 +155,6 @@ export default function App() {
   // Trigger polypharmacy DDI evaluation via Database API
   const handleRunEvaluation = async () => {
     if (selectedDrugs.length < 2) {
-      alert("Please select at least 2 medications from the MAR table to run DDI interaction evaluation.");
       return;
     }
  
@@ -238,8 +237,6 @@ export default function App() {
         ...prev,
         medications: [...prev.medications, formattedMed],
       }));
-      // Auto select newly added medication for evaluation
-      setSelectedDrugs((prev) => [...prev, formattedMed]);
       setNewMedName('');
       setNewMedId('');
       setShowAddForm(false);
@@ -283,18 +280,30 @@ export default function App() {
     }
   };
  
-  // Toggle selection for 3+ multi-drug evaluation
-  const toggleSelectDrug = (med) => {
-    const isSelected = selectedDrugs.some((m) => m.id === med.id);
-    if (isSelected) {
-      if (selectedDrugs.length <= 2) {
-        alert("At least 2 medications must remain selected for DDI interaction testing.");
-        return;
+  const medKey = (med) => med.id || med.drugbank_id || med.name;
+
+  // Evaluation-only selection (does not change MAR orders)
+  const toggleEvalMedication = (med) => {
+    setSelectedDrugs((prev) => {
+      const key = medKey(med);
+      const isSelected = prev.some((m) => medKey(m) === key);
+      if (isSelected) {
+        return prev.filter((m) => medKey(m) !== key);
       }
-      setSelectedDrugs(selectedDrugs.filter((m) => m.id !== med.id));
-    } else {
-      setSelectedDrugs([...selectedDrugs, med]);
-    }
+      return [...prev, med];
+    });
+  };
+
+  const handleSelectAllEvalToggle = () => {
+    setSelectedDrugs((prev) => {
+      const allSelected =
+        patient.medications.length > 0 &&
+        patient.medications.every((med) => prev.some((m) => medKey(m) === medKey(med)));
+      if (allSelected) {
+        return [];
+      }
+      return [...patient.medications];
+    });
   };
 
   // Dropdown Auto-Fill Handler for Add Medication Form
@@ -355,16 +364,7 @@ export default function App() {
     }
   };
 
-  // Select All / Deselect All Helper
-  const handleSelectAllToggle = () => {
-    if (selectedDrugs.length === patient.medications.length) {
-      setSelectedDrugs(patient.medications.slice(0, 2));
-    } else {
-      setSelectedDrugs([...patient.medications]);
-    }
-  };
-
-  const showWorkflowHints = activeNavTab === 'medications' || activeNavTab === 'ddi';
+  const showWorkflowHints = activeNavTab === 'ddi';
 
   return (
     <div className={`app-layout screenshot-theme ${darkMode ? 'dark-theme' : ''}`}>
@@ -455,7 +455,7 @@ export default function App() {
           {showWorkflowHints && (
             <ol className="workflow-steps" aria-label="Evaluation workflow">
               <li>
-                <span className="workflow-step-num">1.</span> Select two or more medications in the table
+                <span className="workflow-step-num">1.</span> Select two or more medications for evaluation
               </li>
               <li>
                 <span className="workflow-step-num">2.</span> Run interaction evaluation
@@ -497,7 +497,7 @@ export default function App() {
                   <header className="section-page-header section-page-header-pad">
                     <h2 className="section-page-title">Medications</h2>
                     <p className="section-helper">
-                      Active regimen (MAR). Select drugs for evaluation, add orders, or discontinue medications.
+                      View the patient&apos;s current medication orders and administration details.
                     </p>
                   </header>
                   <div className="mar-card-header">
@@ -508,19 +508,9 @@ export default function App() {
                           {patient.medications.length} / {MAX_MEDICATIONS} Max (Database Capacity)
                         </span>
                       </div>
-                      <span className="section-helper">
-                        Check medications to include in the next evaluation. At least two are required.
-                      </span>
                     </div>
  
                     <div className="mar-header-actions">
-                      <button 
-                        className="select-all-btn"
-                        onClick={handleSelectAllToggle}
-                      >
-                        {selectedDrugs.length === patient.medications.length ? 'Deselect Extra' : `Select All (${patient.medications.length})`}
-                      </button>
- 
                       {patient.medications.length < MAX_MEDICATIONS && (
                         <button 
                           className="add-med-btn-screenshot"
@@ -568,54 +558,37 @@ export default function App() {
                     <table className="screenshot-mar-table">
                       <thead>
                         <tr>
-                          <th>TEST SELECT</th>
                           <th>DRUGBANK ID</th>
                           <th>MEDICATION NAME</th>
                           <th>DOSAGE</th>
                           <th>FREQUENCY</th>
+                          <th>ROUTE</th>
                           <th>ACTION</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {patient.medications.map((med) => {
-                          const isSelected = selectedDrugs.some((m) => m.id === med.id || m.name === med.name);
-                          return (
-                            <tr 
-                              key={med.id || med.drugbank_id} 
-                              className={isSelected ? 'selected-pair-row' : ''}
-                              onClick={() => toggleSelectDrug(med)}
-                            >
-                              <td className="center-col">
-                                <input 
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => toggleSelectDrug(med)}
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              </td>
+                        {patient.medications.map((med) => (
+                            <tr key={med.id || med.drugbank_id}>
                               <td className="mono-code">{med.id || med.drugbank_id}</td>
                               <td className="drug-name-col">
                                 <strong>{med.name}</strong>
-                                {isSelected && <span className="active-tag">Testing</span>}
                               </td>
-                              <td>{med.dosage || '40 mg'}</td>
-                              <td>{med.frequency || 'QD (Daily)'}</td>
+                              <td>{med.dosage || '—'}</td>
+                              <td>{med.frequency || '—'}</td>
+                              <td>{med.route || '—'}</td>
                               <td className="right-action">
                                 {patient.medications.length > 2 && (
-                                  <button 
+                                  <button
+                                    type="button"
                                     className="discontinue-btn"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRemoveMedication(med.id);
-                                    }}
+                                    onClick={() => handleRemoveMedication(med.id)}
                                   >
                                     Discontinue
                                   </button>
                                 )}
                               </td>
                             </tr>
-                          );
-                        })}
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -629,7 +602,7 @@ export default function App() {
                 <header className="section-page-header section-page-header-standalone">
                   <h2 className="section-page-title">Interaction results</h2>
                   <p className="section-helper">
-                    Run the temporal graph model on the selected regimen and review pairwise scores.
+                    Select two or more medications to evaluate potential drug–drug interactions.
                   </p>
                 </header>
                 <DrugPairCard
@@ -641,6 +614,8 @@ export default function App() {
                   onSelectDrug1={handleSelectDrug1}
                   onSelectDrug2={handleSelectDrug2}
                   onSelectPresetPair={handleSelectPresetPair}
+                  onToggleEvalMedication={toggleEvalMedication}
+                  onSelectAllEval={handleSelectAllEvalToggle}
                 />
               </div>
 
@@ -660,7 +635,7 @@ export default function App() {
                   <div className="screenshot-card portal-empty-state">
                     <p className="portal-empty-title">No evaluation results yet</p>
                     <p className="portal-empty-copy">
-                      Select at least two medications on the Medications page, then run interaction evaluation.
+                      Select at least two medications above, then run interaction evaluation.
                     </p>
                   </div>
                 )}

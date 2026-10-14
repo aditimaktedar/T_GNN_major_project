@@ -53,7 +53,7 @@ export function OverviewSection({
             <span className="overview-stat-label">Active medications</span>
             <span className="overview-stat-value">{patient.medications.length}</span>
             <span className="overview-stat-sub">
-              {selectedDrugs.length} selected for evaluation
+              {selectedDrugs.length} in current evaluation selection
             </span>
           </div>
 

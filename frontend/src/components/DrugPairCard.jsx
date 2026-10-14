@@ -3,6 +3,15 @@ import './DrugPairCard.css';
 import { PRESET_DRUG_PAIRS } from '../data/commonMedications';
 import { BoltLabelIcon, PillLabelIcon } from './SegmentIcons';
 
+function medKey(med) {
+  return med.id || med.drugbank_id || med.name;
+}
+
+function uniquePairCount(n) {
+  if (n < 2) return 0;
+  return (n * (n - 1)) / 2;
+}
+
 export function DrugPairCard({
   selectedDrugs = [],
   availableMeds = [],
@@ -12,28 +21,108 @@ export function DrugPairCard({
   onSelectDrug1,
   onSelectDrug2,
   onSelectPresetPair,
+  onToggleEvalMedication,
+  onSelectAllEval,
 }) {
   const [matrixOpen, setMatrixOpen] = useState(false);
   const pairs = evaluationData?.pairs || [];
   const isMultiDrug = selectedDrugs.length >= 3;
   const canEvaluate = selectedDrugs.length >= 2 && !isEvaluating;
+  const expectedPairs = uniquePairCount(selectedDrugs.length);
+
+  const allEvalSelected =
+    availableMeds.length > 0 &&
+    availableMeds.every((med) => selectedDrugs.some((m) => medKey(m) === medKey(med)));
 
   const drug1 = selectedDrugs[0] || availableMeds[0] || {};
   const drug2 = selectedDrugs[1] || availableMeds[1] || {};
 
   return (
     <div className="screenshot-card appointments-card">
+      <section className="eval-med-picker-section" aria-labelledby="eval-picker-heading">
+        <div className="eval-picker-header">
+          <div>
+            <h3 className="card-main-title" id="eval-picker-heading">
+              Medications for this evaluation
+            </h3>
+            <p className="section-helper inline-helper">
+              Choose from the patient&apos;s active orders. This does not change the medication list.
+            </p>
+          </div>
+          {onSelectAllEval && availableMeds.length > 0 && (
+            <button type="button" className="select-all-btn eval-select-all-btn" onClick={onSelectAllEval}>
+              {allEvalSelected ? 'Clear evaluation selection' : `Select all (${availableMeds.length})`}
+            </button>
+          )}
+        </div>
+
+        <div className="eval-selection-stats" role="status">
+          <span>
+            <strong>{selectedDrugs.length}</strong> medication{selectedDrugs.length === 1 ? '' : 's'} selected
+          </span>
+          <span className="eval-stat-sep" aria-hidden="true">
+            ·
+          </span>
+          <span>
+            <strong>{expectedPairs}</strong> unique pair{expectedPairs === 1 ? '' : 's'} to evaluate
+          </span>
+        </div>
+
+        {selectedDrugs.length < 2 && (
+          <p className="eval-validation-msg" role="alert">
+            Select at least two medications to run an interaction evaluation.
+          </p>
+        )}
+
+        <div className="mar-table-wrapper-screenshot eval-picker-table-wrap">
+          <table className="screenshot-mar-table eval-picker-table">
+            <thead>
+              <tr>
+                <th>Include</th>
+                <th>DrugBank ID</th>
+                <th>Medication</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+              </tr>
+            </thead>
+            <tbody>
+              {availableMeds.map((med) => {
+                const isSelected = selectedDrugs.some((m) => medKey(m) === medKey(med));
+                return (
+                  <tr key={medKey(med)} className={isSelected ? 'selected-pair-row' : ''}>
+                    <td className="center-col">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        aria-label={`Include ${med.name} in evaluation`}
+                        onChange={() => onToggleEvalMedication && onToggleEvalMedication(med)}
+                      />
+                    </td>
+                    <td className="mono-code">{med.id || med.drugbank_id}</td>
+                    <td className="drug-name-col">
+                      <strong>{med.name}</strong>
+                    </td>
+                    <td>{med.dosage || '—'}</td>
+                    <td>{med.frequency || '—'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <div className="card-top-title-row">
         <div className="title-group">
           <h3 className="card-main-title">
-            {isMultiDrug ? 'Selected regimen' : 'Primary drug pair'}
+            {isMultiDrug ? 'Evaluation regimen' : 'Primary drug pair focus'}
           </h3>
           <span className="selected-count-badge">
-            {selectedDrugs.length} selected
-            {pairs.length > 0 ? ` · ${pairs.length} pairwise checks` : ''}
+            {selectedDrugs.length} in regimen
+            {pairs.length > 0 ? ` · ${pairs.length} result pair${pairs.length === 1 ? '' : 's'}` : ''}
           </span>
           <span className="section-helper inline-helper">
-            Choose drugs for quick pair focus, or use the medication table for full regimen selection.
+            Optional: set Drug A and B for pair-focused controls and presets.
           </span>
         </div>
 
@@ -43,7 +132,7 @@ export function DrugPairCard({
             className={`run-eval-primary-btn ${isEvaluating ? 'evaluating' : ''}`}
             onClick={onRunEvaluation}
             disabled={!canEvaluate}
-            title={selectedDrugs.length < 2 ? 'Select at least two medications first' : undefined}
+            aria-busy={isEvaluating}
           >
             {isEvaluating ? (
               <>
@@ -123,27 +212,41 @@ export function DrugPairCard({
       </div>
 
       <div className="selected-meds-container">
-        <div className="sub-section-label">Medications in this evaluation</div>
+        <div className="sub-section-label">Selected for evaluation</div>
 
-        <div className={`drug-items-grid ${selectedDrugs.length > 3 ? 'compact-grid' : ''}`}>
-          {selectedDrugs.map((drug, index) => (
-            <div key={drug.id || index} className="drug-appointment-item accent-highlight">
-              <div className="highlight-accent-line accent" />
-              <div className="item-content-group">
-                <div className="drug-header-title">
-                  <strong className="drug-name-text">{drug.name}</strong>
-                  <span className="code-chip accent">{drug.id}</span>
+        {selectedDrugs.length === 0 ? (
+          <p className="section-helper">No medications selected yet.</p>
+        ) : (
+          <div className={`drug-items-grid ${selectedDrugs.length > 3 ? 'compact-grid' : ''}`}>
+            {selectedDrugs.map((drug, index) => (
+              <div key={medKey(drug) || index} className="drug-appointment-item accent-highlight">
+                <div className="highlight-accent-line accent" />
+                <div className="item-content-group">
+                  <div className="drug-header-title">
+                    <strong className="drug-name-text">{drug.name}</strong>
+                    <span className="code-chip accent">{drug.id || drug.drugbank_id}</span>
+                  </div>
+                  <span className="item-subtext">
+                    #{index + 1} · {drug.dosage || '—'} · {drug.frequency || '—'}
+                  </span>
                 </div>
-                <span className="item-subtext">
-                  #{index + 1} · {drug.dosage || '—'} · {drug.frequency || '—'}
-                </span>
+                <div className="right-checks">
+                  {onToggleEvalMedication && (
+                    <button
+                      type="button"
+                      className="eval-remove-chip-btn"
+                      onClick={() => onToggleEvalMedication(drug)}
+                      aria-label={`Remove ${drug.name} from evaluation`}
+                    >
+                      Remove
+                    </button>
+                  )}
+                  <span className="drug-num-badge">{index + 1}</span>
+                </div>
               </div>
-              <div className="right-checks">
-                <span className="drug-num-badge">{index + 1}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {pairs.length > 0 && (
