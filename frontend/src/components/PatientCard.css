@@ -42,6 +42,26 @@
   line-height: 1.4;
 }
 
+.sidebar-edit-form-scroll {
+  max-height: min(62vh, 520px);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.edit-section-heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0.65rem 0 0.35rem;
+}
+
+.field-hint {
+  font-size: 0.7rem;
+  color: var(--text-light);
+}
+
 .field-label {
   font-size: 0.75rem;
   font-weight: 600;

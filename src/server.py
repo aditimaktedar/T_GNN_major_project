@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import traceback
+from datetime import date
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -43,6 +44,62 @@ def _normalize_medication_row(row: dict) -> dict:
         normalized["id"] = normalized["drugbank_id"]
     return normalized
 
+
+def _patient_row_to_json(row: sqlite3.Row | dict) -> dict:
+    patient = dict(row)
+    patient["emergencyContact"] = patient.get("emergency_contact")
+    return _attach_consistent_age(patient)
+
+
+def _attach_consistent_age(patient: dict) -> dict:
+    """When DOB is stored, age always follows the same rule as profile save."""
+    dob = patient.get("dob")
+    if dob and str(dob).strip():
+        try:
+            patient["age"] = _calculate_age_from_dob(str(dob).strip())
+        except ValueError:
+            pass
+    return patient
+
+
+def _split_name(full_name: str) -> tuple[str, str, str]:
+    parts = full_name.strip().split(None, 1)
+    first = parts[0] if parts else ""
+    last = parts[1] if len(parts) > 1 else ""
+    initials = f"{first[:1]}{last[:1]}".upper() if first else ""
+    return first, last, initials
+
+
+def _calculate_age_from_dob(dob_str: str) -> int:
+    dob = date.fromisoformat(dob_str)
+    today = date.today()
+    if dob > today:
+        raise ValueError("Date of birth cannot be in the future.")
+    age = today.year - dob.year
+    if (today.month, today.day) < (dob.month, dob.day):
+        age -= 1
+    return age
+
+
+def _normalize_weight_value(data: dict) -> str | None:
+    if data.get("weight_kg") is not None and str(data.get("weight_kg")).strip() != "":
+        try:
+            kg = float(data["weight_kg"])
+            if kg <= 0 or kg > 500:
+                raise ValueError("Weight must be between 0 and 500 kg.")
+            return f"{kg:g} kg"
+        except (TypeError, ValueError) as exc:
+            raise ValueError("Invalid weight value.") from exc
+    weight = data.get("weight")
+    if weight is None or str(weight).strip() == "":
+        return None
+    if isinstance(weight, (int, float)):
+        return f"{float(weight):g} kg"
+    text = str(weight).strip()
+    if not text:
+        return None
+    return text if "kg" in text.lower() else f"{text} kg"
+
 app = Flask(__name__)
 CORS(app)
 
@@ -79,7 +136,7 @@ def get_patient():
         conn.close()
         return jsonify({"error": "No patient record found"}), 404
 
-    patient = dict(p_row)
+    patient = _patient_row_to_json(p_row)
 
     cursor.execute("SELECT id, drugbank_id, name, dosage, frequency, route FROM medications WHERE status = 'Active';")
     m_rows = cursor.fetchall()
@@ -89,25 +146,117 @@ def get_patient():
     conn.close()
     return jsonify(patient)
 
+def _optional_text_update(data: dict, key: str, current: dict) -> str | None:
+    if key not in data:
+        return current.get(key)
+    value = data.get(key)
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
 @app.route('/api/patient', methods=['PUT'])
 def update_patient():
     data = request.json or {}
     conn = get_db()
     cursor = conn.cursor()
 
-    name = data.get('name', 'Eleanor Vance')
-    age = data.get('age', 72)
-    gender = data.get('gender', 'Female')
+    cursor.execute("SELECT * FROM patients LIMIT 1;")
+    current_row = cursor.fetchone()
+    if not current_row:
+        conn.close()
+        return jsonify({"error": "No patient record found"}), 404
+    current = dict(current_row)
 
-    cursor.execute("""
-    UPDATE patients SET name = ?, age = ?, gender = ? WHERE id = (SELECT id FROM patients LIMIT 1);
-    """, (name, age, gender))
+    name = (data.get("name") if "name" in data else current.get("name") or "").strip()
+    if not name:
+        conn.close()
+        return jsonify({"error": "Name is required"}), 400
+
+    gender = (data.get("gender") if "gender" in data else current.get("gender") or "").strip()
+    if not gender:
+        conn.close()
+        return jsonify({"error": "Gender is required"}), 400
+
+    if "dob" in data:
+        raw_dob = data.get("dob")
+        if raw_dob is None or str(raw_dob).strip() == "":
+            dob = None
+        else:
+            dob = str(raw_dob).strip()
+    else:
+        dob = current.get("dob")
+
+    try:
+        if dob:
+            age = _calculate_age_from_dob(dob)
+        elif "age" in data:
+            age = int(data.get("age"))
+            if age < 1 or age > 120:
+                raise ValueError("Age must be between 1 and 120.")
+        else:
+            age = int(current.get("age"))
+    except (TypeError, ValueError) as exc:
+        conn.close()
+        return jsonify({"error": str(exc)}), 400
+
+    try:
+        if "weight_kg" in data or "weight" in data:
+            weight = _normalize_weight_value(data)
+        else:
+            weight = current.get("weight")
+    except ValueError as exc:
+        conn.close()
+        return jsonify({"error": str(exc)}), 400
+
+    language = _optional_text_update(data, "language", current)
+    room = _optional_text_update(data, "room", current)
+    physician = _optional_text_update(data, "physician", current)
+
+    first_name, last_name, initials = _split_name(name)
+
+    cursor.execute(
+        """
+        UPDATE patients SET
+            name = ?,
+            first_name = ?,
+            last_name = ?,
+            initials = ?,
+            age = ?,
+            gender = ?,
+            dob = ?,
+            language = ?,
+            weight = ?,
+            room = ?,
+            physician = ?
+        WHERE id = ?;
+        """,
+        (
+            name,
+            first_name,
+            last_name,
+            initials,
+            age,
+            gender,
+            dob,
+            language,
+            weight,
+            room,
+            physician,
+            current["id"],
+        ),
+    )
+    if cursor.rowcount == 0:
+        conn.close()
+        return jsonify({"error": "No patient record found"}), 404
+
     conn.commit()
 
     cursor.execute("SELECT * FROM patients LIMIT 1;")
-    patient = dict(cursor.fetchone())
+    patient = _patient_row_to_json(cursor.fetchone())
     cursor.execute("SELECT id, drugbank_id, name, dosage, frequency, route FROM medications WHERE status = 'Active';")
-    patient['medications'] = [_normalize_medication_row(dict(r)) for r in cursor.fetchall()]
+    patient["medications"] = [_normalize_medication_row(dict(r)) for r in cursor.fetchall()]
 
     conn.close()
     return jsonify(patient)

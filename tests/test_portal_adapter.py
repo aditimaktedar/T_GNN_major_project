@@ -55,3 +55,35 @@ def test_orchestrator_regimen_to_portal_shape() -> None:
     assert payload["pairs"][0]["severity"] == "MODERATE"
     assert payload["rag_explanation"]["shared_pk"] == ["metabolism"]
     assert payload["evidence"]["twosides"]["observed"] is True
+
+
+def test_portal_resolves_clinical_name_when_resolver_returns_drugbank_id() -> None:
+    selected = [
+        {"id": "DB00213", "name": "Pantoprazole"},
+        {"id": "DB00722", "name": "Lisinopril"},
+    ]
+    orchestrator_result = {
+        "total_pairs_evaluated": 1,
+        "evaluated_pairs": [
+            {
+                "pair_label": "Pantoprazole + DB00722",
+                "drug_1": {"drugbank_id": "DB00213", "name": "Pantoprazole"},
+                "drug_2": {"drugbank_id": "DB00722", "name": "DB00722"},
+                "prediction": {
+                    "interaction": "NO",
+                    "probability": 0.21,
+                    "severity": "LOW",
+                    "source": "TemporalDDI-GNN v2",
+                },
+                "full_response": {"rag_explanation": {}, "evidence": {}},
+            }
+        ],
+    }
+
+    payload = orchestrator_regimen_to_portal(selected, orchestrator_result)
+    pair = payload["pairs"][0]
+    assert pair["drug1"]["name"] == "Pantoprazole"
+    assert pair["drug1"]["id"] == "DB00213"
+    assert pair["drug2"]["name"] == "Lisinopril"
+    assert pair["drug2"]["id"] == "DB00722"
+    assert payload["expectedPairCount"] == 1

@@ -15,12 +15,45 @@ import {
   fetchHealthStatus,
 } from './api/client';
 import { RagIcon } from './components/SegmentIcons';
+import { calculateAgeFromDob } from './components/dobDateUtils';
 import { generatePdfReport } from './utils/generatePdfReport';
 import { OverviewSection } from './components/OverviewSection';
 import { SourceAuditPanel } from './components/SourceAuditPanel';
 
 const MAX_MEDICATIONS = 15;
 const NAV_SECTIONS = ['overview', 'medications', 'ddi', 'rag', 'evidence'];
+
+function normalizePatientFromApi(raw) {
+  if (!raw) return raw;
+  const dob = raw.dob;
+  let age = raw.age;
+  if (dob) {
+    const derived = calculateAgeFromDob(dob);
+    if (derived != null) {
+      age = derived;
+    }
+  }
+  return {
+    ...raw,
+    mrn: raw.mrn,
+    name: raw.name,
+    firstName: raw.first_name ?? raw.firstName,
+    lastName: raw.last_name ?? raw.lastName,
+    initials: raw.initials,
+    age,
+    dob,
+    gender: raw.gender,
+    language: raw.language,
+    weight: raw.weight,
+    room: raw.room,
+    physician: raw.physician,
+    phone: raw.phone,
+    email: raw.email,
+    address: raw.address,
+    emergencyContact: raw.emergency_contact ?? raw.emergencyContact,
+    medications: Array.isArray(raw.medications) ? raw.medications : [],
+  };
+}
 
 function selectionSignature(drugs) {
   return drugs
@@ -182,9 +215,12 @@ export default function App() {
   const [activeEvaluatedData, setActiveEvaluatedData] = useState(null);
   const [evaluationError, setEvaluationError] = useState(null);
   const [loadNotice, setLoadNotice] = useState(null);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [reportError, setReportError] = useState(null);
   const evaluationAbortRef = useRef(null);
   const ddiResultsAnchorRef = useRef(null);
   const scrollToResultsPendingRef = useRef(false);
+  const mainContentRef = useRef(null);
  
   const [newMedName, setNewMedName] = useState('');
   const [newMedId, setNewMedId] = useState('');
@@ -220,7 +256,7 @@ export default function App() {
       try {
         const dbPatient = await fetchPatientProfile();
         if (dbPatient && dbPatient.medications) {
-          setPatient(dbPatient);
+          setPatient(normalizePatientFromApi(dbPatient));
           const initialSelected = dbPatient.medications.slice(0, 3);
           setSelectedDrugs(initialSelected);
  
@@ -248,7 +284,12 @@ export default function App() {
     if (window.location.hash !== hash) {
       window.history.pushState({ section: tabId }, '', hash);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const mainEl = mainContentRef.current;
+    if (mainEl) {
+      mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
  
   // Trigger polypharmacy DDI evaluation via Database API
@@ -288,14 +329,23 @@ export default function App() {
   // Update Patient Profile in Database
   const handleUpdatePatient = async (updatedProfile) => {
     try {
-      const updated = await updatePatientProfile(updatedProfile);
-      setPatient((prev) => ({
-        ...prev,
-        name: updated.name || updatedProfile.name,
-        age: updated.age ?? updatedProfile.age,
-        gender: updated.gender || updatedProfile.gender || prev.gender,
-      }));
-      return { ok: true };
+      await updatePatientProfile(updatedProfile);
+      const fresh = await fetchPatientProfile();
+      const normalized = normalizePatientFromApi(fresh);
+      if (!normalized?.name) {
+        throw new Error('Patient record could not be reloaded after save.');
+      }
+      setPatient(normalized);
+      setSelectedDrugs((prev) => {
+        const next = prev.filter((m) =>
+          normalized.medications.some(
+            (pm) => (pm.id || pm.drugbank_id) === (m.id || m.drugbank_id)
+          )
+        );
+        if (next.length >= 2) return next;
+        return normalized.medications.slice(0, Math.min(3, normalized.medications.length));
+      });
+      return { ok: true, patient: normalized };
     } catch (err) {
       console.error("Failed to update patient profile in DB:", err);
       return {
@@ -474,6 +524,41 @@ export default function App() {
       selectionSignature(activeEvaluatedData.selectedDrugs || []);
   const resultsStale = Boolean(activeEvaluatedData && !evaluationMatchesSelection);
 
+  const handleDownloadReport = async () => {
+    setReportError(null);
+    setIsGeneratingReport(true);
+    try {
+      let patientRecord = patient;
+      try {
+        const fresh = await fetchPatientProfile();
+        patientRecord = normalizePatientFromApi(fresh);
+        if (patientRecord?.name) {
+          setPatient(patientRecord);
+        }
+      } catch (fetchErr) {
+        if (!patientRecord?.name) {
+          throw new Error(
+            fetchErr.message || 'Could not load patient record. Connect to the API and try again.',
+          );
+        }
+      }
+
+      const evaluationForReport = evaluationMatchesSelection ? activeEvaluatedData : null;
+
+      await generatePdfReport({
+        patient: patientRecord,
+        evaluation: evaluationForReport,
+        currentSelection: selectedDrugs,
+        engineHealth,
+      });
+    } catch (err) {
+      console.error('PDF report generation failed:', err);
+      setReportError(err.message || 'Report generation failed.');
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
+
   useEffect(() => {
     if (!scrollToResultsPendingRef.current) return;
     if (isEvaluating) return;
@@ -504,16 +589,24 @@ export default function App() {
  
         <div className="nav-actions">
           {/* Download Clinical PDF Report Button */}
-          <button 
+          <button
+            type="button"
             className="download-report-btn"
-            onClick={() => generatePdfReport(patient, selectedDrugs, activeEvaluatedData)}
-            title="Download Clinical PDF Report"
+            onClick={handleDownloadReport}
+            disabled={isGeneratingReport || isLoadingDB}
+            title="Download clinical DDI evaluation report (PDF)"
+            aria-busy={isGeneratingReport}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span>Download Report</span>
+            <span>{isGeneratingReport ? 'Generating…' : 'Download Report'}</span>
           </button>
+          {reportError && (
+            <span className="report-download-error" role="alert">
+              {reportError}
+            </span>
+          )}
 
           {/* Small Dark Mode Toggle Button */}
           <button 
@@ -570,7 +663,7 @@ export default function App() {
         </aside>
  
         {/* Right Column: Main Content Area */}
-        <section className="right-main-col" aria-live="polite">
+        <section className="right-main-col" ref={mainContentRef} aria-live="polite">
           <p className="clinical-disclaimer" role="note">
             This tool shows research-model predictions and retrieved reference text. It is not a clinical
             diagnosis, prescribing guide, or substitute for a licensed clinician.

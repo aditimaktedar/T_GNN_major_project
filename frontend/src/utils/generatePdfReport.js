@@ -1,265 +1,573 @@
 import jsPDF from 'jspdf';
+import { normalizePatientForReport, prepareEvaluationForReport } from './reportData';
 
-export function generatePdfReport(patient, selectedPair, activeEvaluatedData) {
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
+const MARGIN = 18;
+const PAGE_BOTTOM = 272;
+const LINE = 4.8;
+
+const COLORS = {
+  text: [44, 44, 44],
+  muted: [107, 107, 107],
+  sage: [95, 125, 115],
+  border: [210, 208, 203],
+  white: [255, 255, 255],
+};
+
+function fmt(value, emptyLabel = 'Not recorded') {
+  if (value === null || value === undefined || value === '') return emptyLabel;
+  return String(value);
+}
+
+function drugId(med) {
+  return med?.id || med?.drugbank_id || '—';
+}
+
+function formatReportTimestamp(date) {
+  return date.toLocaleString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
   });
+}
 
+function ensureSpace(doc, y, needed, margin, onNewPage) {
+  if (y + needed <= PAGE_BOTTOM) return y;
+  doc.addPage();
+  if (onNewPage) onNewPage();
+  return margin + 8;
+}
+
+function drawHorizontalRule(doc, y, pageWidth, margin) {
+  doc.setDrawColor(...COLORS.border);
+  doc.setLineWidth(0.2);
+  doc.line(margin, y, pageWidth - margin, y);
+}
+
+function drawSectionTitle(doc, title, y, margin) {
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...COLORS.sage);
+  doc.text(title, margin, y);
+  doc.setTextColor(...COLORS.text);
+  return y + 6;
+}
+
+function drawBodyText(doc, text, y, margin, contentWidth) {
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.text);
+  const lines = doc.splitTextToSize(text, contentWidth);
+  lines.forEach((line) => {
+    y = ensureSpace(doc, y, LINE, margin);
+    doc.text(line, margin, y);
+    y += LINE;
+  });
+  return y;
+}
+
+function drawKeyValueRow(doc, label, value, y, margin, contentWidth) {
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(label, margin, y);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...COLORS.text);
+  const valLines = doc.splitTextToSize(fmt(value), contentWidth - 42);
+  doc.text(valLines[0], margin + 42, y);
+  y += LINE;
+  for (let i = 1; i < valLines.length; i += 1) {
+    y = ensureSpace(doc, y, LINE, margin);
+    doc.text(valLines[i], margin + 42, y);
+    y += LINE;
+  }
+  return y;
+}
+
+function drawTableHeader(doc, columns, y, margin) {
+  doc.setFillColor(248, 247, 245);
+  doc.setDrawColor(...COLORS.border);
+  const rowH = 7;
+  const tableW = columns.reduce((s, c) => s + c.width, 0);
+  doc.rect(margin, y - 4.5, tableW, rowH, 'FD');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...COLORS.muted);
+  let x = margin + 2;
+  columns.forEach((col) => {
+    doc.text(col.title, x, y);
+    x += col.width;
+  });
+  return y + 4;
+}
+
+function drawTableRow(doc, cells, columns, y, margin, rowHeight = 7) {
+  const tableW = columns.reduce((s, c) => s + c.width, 0);
+  doc.setDrawColor(...COLORS.border);
+  doc.setLineWidth(0.15);
+  doc.line(margin, y + rowHeight - 4, margin + tableW, y + rowHeight - 4);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...COLORS.text);
+  let x = margin + 2;
+  columns.forEach((col, idx) => {
+    const raw = cells[idx] ?? '—';
+    const clipped = doc.splitTextToSize(String(raw), col.width - 4);
+    doc.text(clipped[0], x, y);
+    x += col.width;
+  });
+  return y + rowHeight;
+}
+
+function addPageFooters(doc, patient, generatedAt) {
+  const pageCount = doc.internal.getNumberOfPages();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 14;
-  const contentWidth = pageWidth - margin * 2;
-  let yPos = 14;
-
-  // Primary palette
-  const navy = [15, 23, 42];       // #0f172a
-  const blue = [37, 99, 235];      // #2563eb
-  const lightBlue = [239, 246, 255]; // #eff6ff
-  const red = [220, 38, 38];       // #dc2626
-  const grayText = [71, 85, 105];  // #475569
-  const borderGray = [226, 232, 240]; // #e2e8f0
-
-  // 1. Header Banner
-  doc.setFillColor(...navy);
-  doc.rect(margin, yPos, contentWidth, 22, 'F');
-
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text('CLINICAL PATIENT & DDI EVALUATION REPORT', margin + 6, yPos + 9);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(191, 219, 254);
-  doc.text('T-GNN Clinical Engine v2.4 • Confidential Medical Record', margin + 6, yPos + 16);
-
-  // Top Right Timestamp
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  doc.setFontSize(8);
-  doc.text(`Generated: ${dateStr} ${timeStr}`, pageWidth - margin - 6, yPos + 12, { align: 'right' });
-
-  yPos += 28;
-
-  // 2. Patient Profile Box
-  doc.setFillColor(...lightBlue);
-  doc.setDrawColor(...blue);
-  doc.setLineWidth(0.4);
-  doc.roundedRect(margin, yPos, contentWidth, 32, 2, 2, 'FD');
-
-  doc.setTextColor(...navy);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
-  doc.text(patient.name || 'Patient Name', margin + 6, yPos + 8);
-
-  // Demographic pills
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.setTextColor(...blue);
-  doc.text(`AGE: ${patient.age} yrs`, margin + 6, yPos + 15);
-  doc.setTextColor(...grayText);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`|  GENDER: ${patient.gender || 'Female'}  |  DOB: ${patient.dob || '1954-07-22'}  |  MRN: ${patient.mrn || 'MRN-9842-7019'}`, margin + 30, yPos + 15);
-
-  // Detail row 2
-  doc.setFontSize(8.5);
-  doc.setTextColor(...grayText);
-  doc.text(`Attending Physician: ${patient.physician || 'Dr. Jordan Hughes'}`, margin + 6, yPos + 22);
-  doc.text(`Location: ${patient.room || 'Bed 304-B (Step-down Unit)'}`, margin + 6, yPos + 27);
-  doc.text(`Contact: ${patient.phone || '(406) 555-0120'}`, margin + 110, yPos + 22);
-  doc.text(`Language: ${patient.language || 'English'}`, margin + 110, yPos + 27);
-
-  yPos += 38;
-
-  // 3. Evaluated DDI Interaction Summary Box
-  const drug1 = selectedPair[0] || { name: 'Pantoprazole', id: 'DB00213' };
-  const drug2 = selectedPair[1] || { name: 'Modafinil', id: 'DB00745' };
-  const prediction = activeEvaluatedData?.prediction || {};
-
-  const isCritical = prediction.severity === 'MAJOR' || prediction.severity === 'CRITICAL';
-  const statusColor = isCritical ? red : blue;
-
-  doc.setFillColor(isCritical ? 254 : 240, isCritical ? 242 : 249, isCritical ? 242 : 255);
-  doc.setDrawColor(...statusColor);
-  doc.setLineWidth(0.5);
-  doc.roundedRect(margin, yPos, contentWidth, 34, 2, 2, 'FD');
-
-  doc.setTextColor(...statusColor);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.text('EVALUATED DRUG PAIR INTERACTION RISK', margin + 6, yPos + 7);
-
-  doc.setTextColor(...navy);
-  doc.setFontSize(11);
-  doc.text(`${drug1.name} (${drug1.id})   ↔   ${drug2.name} (${drug2.id})`, margin + 6, yPos + 15);
-
-  // Metrics columns
-  // Col 1: Status
-  doc.setFontSize(8);
-  doc.setTextColor(...grayText);
-  doc.text('INTERACTION STATUS', margin + 6, yPos + 22);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...statusColor);
-  doc.text(prediction.interaction === 'YES' ? 'YES — INTERACTION DETECTED' : 'NO INTERACTION DETECTED', margin + 6, yPos + 28);
-
-  // Col 2: Probability
-  const probVal = prediction.probability ? Math.round(prediction.probability * 100) : 91;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(...grayText);
-  doc.text('MODEL PROBABILITY', margin + 75, yPos + 22);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...navy);
-  doc.text(`${probVal}% Confidence`, margin + 75, yPos + 28);
-
-  // Col 3: Severity
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(...grayText);
-  doc.text('SEVERITY LEVEL', margin + 130, yPos + 22);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...statusColor);
-  doc.text(`${prediction.severity || 'MAJOR'} SEVERITY`, margin + 130, yPos + 28);
-
-  yPos += 40;
-
-  // 4. RAG Clinical Explanation
-  doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(...borderGray);
-  doc.setLineWidth(0.3);
-  doc.roundedRect(margin, yPos, contentWidth, 38, 2, 2, 'FD');
-
-  doc.setTextColor(...navy);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.text('RAG CLINICAL MECHANISM EXPLANATION', margin + 6, yPos + 7);
-
-  const ragData = activeEvaluatedData?.rag_explanation || {};
-  const summaryText = ragData.summary || "Pantoprazole and Modafinil exhibit significant metabolic pathway overlap in hepatic biotransformation.";
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...grayText);
-
-  // Wrap summary text
-  const splitSummary = doc.splitTextToSize(summaryText, contentWidth - 12);
-  doc.text(splitSummary.slice(0, 3), margin + 6, yPos + 13);
-
-  // Shared mechanisms pills
-  const mechanisms = ragData.shared_mechanisms || ["Hepatic CYP2C19 Inhibition", "CYP3A4 Enzyme Induction"];
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  doc.setTextColor(...navy);
-  doc.text(`Mechanisms: ${mechanisms.join(' • ')}`, margin + 6, yPos + 32);
-
-  yPos += 44;
-
-  // 5. Active MAR Regimen Table
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(...navy);
-  doc.text('ACTIVE MEDICATION ADMINISTRATION RECORD (MAR)', margin, yPos);
-  yPos += 4;
-
-  // Table header
-  doc.setFillColor(241, 245, 249);
-  doc.setDrawColor(...borderGray);
-  doc.rect(margin, yPos, contentWidth, 7, 'FD');
-
-  doc.setFontSize(8);
-  doc.setTextColor(...grayText);
-  doc.text('DRUGBANK ID', margin + 4, yPos + 5);
-  doc.text('MEDICATION NAME', margin + 35, yPos + 5);
-  doc.text('DOSAGE', margin + 95, yPos + 5);
-  doc.text('FREQUENCY', margin + 125, yPos + 5);
-  doc.text('ROUTE', margin + 160, yPos + 5);
-
-  yPos += 7;
-
-  // Table rows
-  const meds = patient.medications || [];
-  meds.forEach((med, idx) => {
-    if (yPos > pageHeight - 25) {
-      doc.addPage();
-      yPos = 14;
-    }
-
-    const isSelected = selectedPair.some(m => m.id === med.id);
-    if (isSelected) {
-      doc.setFillColor(239, 246, 255);
-      doc.rect(margin, yPos, contentWidth, 7, 'F');
-    }
-
-    doc.setDrawColor(...borderGray);
-    doc.line(margin, yPos + 7, margin + contentWidth, yPos + 7);
-
-    doc.setFont('helvetica', isSelected ? 'bold' : 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(isSelected ? blue[0] : navy[0], isSelected ? blue[1] : navy[1], isSelected ? blue[2] : navy[2]);
-    doc.text(med.id || `DB0000${idx}`, margin + 4, yPos + 5);
-
-    doc.setTextColor(...navy);
-    doc.text(med.name, margin + 35, yPos + 5);
-    if (isSelected) {
-      doc.setFontSize(7);
-      doc.setTextColor(...blue);
-      doc.text('[Evaluated Pair]', margin + 70, yPos + 5);
-    }
-
+  for (let i = 1; i <= pageCount; i += 1) {
+    doc.setPage(i);
+    drawHorizontalRule(doc, pageHeight - 14, pageWidth, MARGIN);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...grayText);
-    doc.text(med.dosage || '40 mg', margin + 95, yPos + 5);
-    doc.text(med.frequency || 'QD (Daily)', margin + 125, yPos + 5);
-    doc.text(med.route || 'Oral', margin + 160, yPos + 5);
+    doc.setFontSize(7.5);
+    doc.setTextColor(...COLORS.muted);
+    const left = fmt(patient?.mrn, 'Patient record');
+    doc.text(`DDI Research Portal · ${left}`, MARGIN, pageHeight - 9);
+    doc.text(`Generated ${formatReportTimestamp(generatedAt)}`, pageWidth / 2, pageHeight - 9, {
+      align: 'center',
+    });
+    doc.text(`Page ${i} of ${pageCount}`, pageWidth - MARGIN, pageHeight - 9, { align: 'right' });
+  }
+}
 
-    yPos += 7;
-  });
-
-  yPos += 8;
-
-  // 6. Evidence Audit Section
-  if (yPos > pageHeight - 30) {
-    doc.addPage();
-    yPos = 14;
+/**
+ * @param {{ patient: object, evaluation: object|null, currentSelection: object[], engineHealth: object|null }} input
+ */
+export async function generatePdfReport({ patient, evaluation, currentSelection, engineHealth }) {
+  if (!patient || !patient.name) {
+    throw new Error('Patient record is unavailable. Save the profile or connect to the API before downloading.');
   }
 
+  const patientRecord = normalizePatientForReport(patient);
+  const evaluationPrepared = prepareEvaluationForReport(evaluation, patientRecord);
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const contentWidth = pageWidth - MARGIN * 2;
+  const generatedAt = new Date();
+  let y = MARGIN;
+
+  const onNewPage = () => {
+    y = MARGIN + 4;
+  };
+
+  // Report header
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...navy);
-  doc.text('MULTI-DATABASE EVIDENCE AUDIT SUMMARY', margin, yPos);
-  yPos += 4;
-
-  const ev = activeEvaluatedData?.evidence || {};
-  const dbCount = (ev.drugbank?.drug_1_count || 0) + (ev.drugbank?.drug_2_count || 0);
-  const cpicCount = (ev.cpic?.drug_1_count || 0) + (ev.cpic?.drug_2_count || 0);
-
-  doc.setFillColor(248, 250, 252);
-  doc.roundedRect(margin, yPos, contentWidth, 16, 2, 2, 'FD');
+  doc.setFontSize(16);
+  doc.setTextColor(...COLORS.text);
+  doc.text('Drug–Drug Interaction Evaluation Report', MARGIN, y);
+  y += 8;
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(...grayText);
-  doc.text(`• DrugBank Database: ${dbCount} interactions logged`, margin + 6, yPos + 6);
-  doc.text(`• CPIC Pharmacogenomics: ${cpicCount} clinical guidelines found`, margin + 6, yPos + 11);
-  doc.text(`• TwoSides Pharmacovigilance: ${ev.twosides?.observed ? 'Observed in FDA FAERS data' : 'No prior FAERS reports'}`, margin + 95, yPos + 6);
-  doc.text(`• OffSides Signal Detection: ${ev.offsides?.drug_1_available ? 'Active signals recorded' : 'Standard profile'}`, margin + 95, yPos + 11);
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(`Patient: ${patientRecord.name}`, MARGIN, y);
+  y += LINE;
+  doc.text(`Identifier: ${fmt(patientRecord.mrn)}`, MARGIN, y);
+  y += LINE;
+  doc.text(`Report generated: ${formatReportTimestamp(generatedAt)}`, MARGIN, y);
+  y += LINE;
 
-  yPos += 22;
+  const evalStatus = evaluationPrepared ? 'Evaluation completed' : 'No current evaluation included';
+  doc.text(`Evaluation status: ${evalStatus}`, MARGIN, y);
+  y += LINE + 2;
 
-  // Page Footer
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(7.5);
-  doc.setTextColor(148, 163, 184);
-  doc.text(`Report generated for ${patient.name} (MRN: ${patient.mrn}) • T-GNN Clinical Portal • Page 1 of 1`, pageWidth / 2, pageHeight - 8, { align: 'center' });
+  const disclaimer =
+    'This document summarizes research-model predictions and retrieved reference text. It is not a clinical diagnosis, prescribing guide, or substitute for review by a licensed clinician.';
+  y = drawBodyText(doc, disclaimer, y, MARGIN, contentWidth);
+  y += 4;
+  drawHorizontalRule(doc, y, pageWidth, MARGIN);
+  y += 8;
 
-  // Save the PDF file
-  const filename = `Patient_Report_${patient.name ? patient.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Patient'}_${patient.mrn || 'MRN'}.pdf`;
+  // 1. Patient information
+  y = drawSectionTitle(doc, '1. Patient information', y, MARGIN);
+  y = drawKeyValueRow(doc, 'Full name:', patientRecord.name, y, MARGIN, contentWidth);
+  y = drawKeyValueRow(doc, 'Date of birth:', patientRecord.dob, y, MARGIN, contentWidth);
+  y = drawKeyValueRow(doc, 'Age (years):', patientRecord.age, y, MARGIN, contentWidth);
+  if (patientRecord.dob && patientRecord.age != null) {
+    y = drawBodyText(
+      doc,
+      'Age is calculated from date of birth using the same rule as the clinical portal.',
+      y,
+      MARGIN,
+      contentWidth,
+    );
+  }
+  y = drawKeyValueRow(doc, 'Gender:', patientRecord.gender, y, MARGIN, contentWidth);
+  y = drawKeyValueRow(doc, 'Preferred language:', patientRecord.language, y, MARGIN, contentWidth);
+  y = drawKeyValueRow(doc, 'Weight:', patientRecord.weight, y, MARGIN, contentWidth);
+  y = drawKeyValueRow(doc, 'Care location:', patientRecord.room, y, MARGIN, contentWidth);
+  y = drawKeyValueRow(doc, 'Attending physician:', patientRecord.physician, y, MARGIN, contentWidth);
+  y += 4;
+
+  // 2. Medication regimen
+  y = ensureSpace(doc, y, 20, MARGIN, onNewPage);
+  y = drawSectionTitle(doc, '2. Medication regimen', y, MARGIN);
+
+  const evalDrugs = evaluationPrepared?.selectedDrugs || [];
+  const selection = currentSelection || [];
+  const selectionSig = (list) =>
+    list
+      .map((d) => d.id || d.drugbank_id || d.name || '')
+      .filter(Boolean)
+      .sort()
+      .join('|');
+  const selectionMatchesEval =
+    evaluationPrepared && selectionSig(selection) === selectionSig(evalDrugs);
+
+  if (evaluationPrepared && evalDrugs.length > 0) {
+    y = drawBodyText(
+      doc,
+      selectionMatchesEval
+        ? 'Medications included in the evaluation reported below.'
+        : 'Evaluation was run on a different selection than the current portal selection; regimen table reflects the evaluated set.',
+      y,
+      MARGIN,
+      contentWidth,
+    );
+    y += 2;
+  } else {
+    y = drawBodyText(
+      doc,
+      'No evaluation is attached to this report. The table lists the patient’s active medication record from the clinical database.',
+      y,
+      MARGIN,
+      contentWidth,
+    );
+    y += 2;
+  }
+
+  const regimenSource = evaluationPrepared?.selectedDrugs?.length
+    ? evaluationPrepared.selectedDrugs
+    : patientRecord.medications || [];
+  const fullMar = patientRecord.medications || [];
+  const evalIds = new Set(regimenSource.map((m) => drugId(m)));
+
+  const medCols = [
+    { title: 'DrugBank ID', width: 26 },
+    { title: 'Medication', width: 48 },
+    { title: 'Dosage', width: 26 },
+    { title: 'Frequency', width: 30 },
+    { title: 'Route', width: 20 },
+    { title: 'In evaluation', width: 24 },
+  ];
+
+  const drawMedHeader = () => {
+    y = ensureSpace(doc, y, 12, MARGIN, onNewPage);
+    y = drawTableHeader(doc, medCols, y, MARGIN);
+  };
+
+  drawMedHeader();
+  if (regimenSource.length === 0) {
+    y = drawBodyText(doc, 'No medications on record.', y, MARGIN, contentWidth);
+  } else {
+    regimenSource.forEach((med) => {
+      y = ensureSpace(doc, y, 8, MARGIN, onNewPage);
+      if (y <= MARGIN + 10) drawMedHeader();
+      y = drawTableRow(
+        doc,
+        [
+          drugId(med),
+          med.name || '—',
+          fmt(med.dosage, '—'),
+          fmt(med.frequency, '—'),
+          fmt(med.route, '—'),
+          evalIds.has(drugId(med)) ? 'Yes' : 'No',
+        ],
+        medCols,
+        y,
+        MARGIN,
+      );
+    });
+  }
+
+  if (fullMar.length > regimenSource.length) {
+    y += 3;
+    y = drawBodyText(
+      doc,
+      `Complete active regimen (${fullMar.length} medications) is maintained in the portal; ${regimenSource.length} medication(s) are listed above for this report context.`,
+      y,
+      MARGIN,
+      contentWidth,
+    );
+  }
+  y += 6;
+
+  // 3. Evaluation summary
+  y = ensureSpace(doc, y, 24, MARGIN, onNewPage);
+  y = drawSectionTitle(doc, '3. Evaluation summary', y, MARGIN);
+
+  if (!evaluationPrepared) {
+    y = drawBodyText(
+      doc,
+      'No interaction evaluation is included. Run an evaluation in the portal and download again to attach pairwise results.',
+      y,
+      MARGIN,
+      contentWidth,
+    );
+  } else {
+    const pred = evaluationPrepared.prediction || {};
+    const meta = evaluationPrepared.evaluation_meta || {};
+    const engineLabel =
+      pred.source ||
+      meta.engine ||
+      (engineHealth?.engine?.model ? String(engineHealth.engine.model) : 'TemporalDDI-GNN');
+    const selectedCount = evalDrugs.length || selection.length;
+    y = drawKeyValueRow(doc, 'Model / source:', engineLabel, y, MARGIN, contentWidth);
+    y = drawKeyValueRow(doc, 'Medications evaluated:', selectedCount, y, MARGIN, contentWidth);
+    y = drawKeyValueRow(
+      doc,
+      'Pairwise channels:',
+      evaluationPrepared.pairCount ?? (evaluationPrepared.pairs || []).length,
+      y,
+      MARGIN,
+      contentWidth,
+    );
+    if (evaluationPrepared.expectedPairCount != null) {
+      y = drawKeyValueRow(
+        doc,
+        'Expected pairwise channels:',
+        evaluationPrepared.expectedPairCount,
+        y,
+        MARGIN,
+        contentWidth,
+      );
+    }
+    if (evaluationPrepared.countMismatch) {
+      y = drawBodyText(
+        doc,
+        'Note: the number of pairwise rows in this report does not match the expected count for the evaluated regimen. Verify the evaluation response before clinical use.',
+        y,
+        MARGIN,
+        contentWidth,
+      );
+    }
+    y = drawKeyValueRow(
+      doc,
+      'Aggregate interaction signal:',
+      pred.interaction != null ? String(pred.interaction) : 'Not recorded',
+      y,
+      MARGIN,
+      contentWidth,
+    );
+    if (pred.probability != null) {
+      y = drawKeyValueRow(
+        doc,
+        'Highest pairwise model score:',
+        `${Math.round(Number(pred.probability) * 100)}%`,
+        y,
+        MARGIN,
+        contentWidth,
+      );
+    }
+    if (pred.severity) {
+      y = drawKeyValueRow(doc, 'Highest severity label:', pred.severity, y, MARGIN, contentWidth);
+    }
+    if (
+      evaluationPrepared.majorCount != null ||
+      evaluationPrepared.modCount != null ||
+      evaluationPrepared.lowCount != null
+    ) {
+      y = drawKeyValueRow(
+        doc,
+        'Severity distribution:',
+        `Major: ${evaluationPrepared.majorCount ?? 0}, Moderate: ${evaluationPrepared.modCount ?? 0}, Low: ${evaluationPrepared.lowCount ?? 0}`,
+        y,
+        MARGIN,
+        contentWidth,
+      );
+    }
+    if (pred.alertCode) {
+      y = drawKeyValueRow(doc, 'Alert reference:', pred.alertCode, y, MARGIN, contentWidth);
+    }
+    y += 2;
+    y = drawBodyText(
+      doc,
+      'Model scores indicate statistical association from the research pipeline; they are not calibrated probabilities of clinical harm.',
+      y,
+      MARGIN,
+      contentWidth,
+    );
+  }
+  y += 6;
+
+  // 4. Pairwise results
+  y = ensureSpace(doc, y, 20, MARGIN, onNewPage);
+  y = drawSectionTitle(doc, '4. Pairwise interaction results', y, MARGIN);
+
+  const pairs = evaluationPrepared?.pairs || [];
+  const unresolvedPairs = pairs.filter(
+    (p) => p.drug1?.nameUnresolved || p.drug2?.nameUnresolved,
+  ).length;
+
+  if (!evaluationPrepared || pairs.length === 0) {
+    y = drawBodyText(doc, 'No pairwise results available.', y, MARGIN, contentWidth);
+  } else {
+    const pairCols = [
+      { title: 'Drug A name', width: 26 },
+      { title: 'Drug A ID', width: 18 },
+      { title: 'Drug B name', width: 26 },
+      { title: 'Drug B ID', width: 18 },
+      { title: 'Signal', width: 16 },
+      { title: 'Score', width: 14 },
+      { title: 'Severity', width: 16 },
+      { title: 'Mechanism', width: 40 },
+    ];
+
+    const drawPairHeader = () => {
+      y = ensureSpace(doc, y, 12, MARGIN, onNewPage);
+      y = drawTableHeader(doc, pairCols, y, MARGIN);
+    };
+
+    drawPairHeader();
+    if (unresolvedPairs > 0) {
+      y = drawBodyText(
+        doc,
+        `${unresolvedPairs} pair row(s) could not be mapped to a clinical medication name from the regimen; identifiers are shown separately.`,
+        y,
+        MARGIN,
+        contentWidth,
+      );
+      y += 2;
+    }
+
+    pairs.forEach((pair) => {
+      const mech = pair.mechanism || pair.summary || '';
+      const mechShort = mech.length > 100 ? `${mech.slice(0, 97)}…` : mech;
+      const score =
+        pair.probability != null ? `${Math.round(Number(pair.probability) * 100)}%` : '—';
+      const nameA = pair.drug1?.name || '—';
+      const nameB = pair.drug2?.name || '—';
+      const idA = pair.drug1?.id || '—';
+      const idB = pair.drug2?.id || '—';
+      y = ensureSpace(doc, y, 10, MARGIN, onNewPage);
+      if (y <= MARGIN + 12) drawPairHeader();
+      y = drawTableRow(
+        doc,
+        [
+          nameA,
+          idA,
+          nameB,
+          idB,
+          pair.interaction || '—',
+          score,
+          pair.severity || '—',
+          mechShort || '—',
+        ],
+        pairCols,
+        y,
+        MARGIN,
+        8,
+      );
+      if (pair.summary && pair.summary !== mech) {
+        y = ensureSpace(doc, y, LINE * 2, MARGIN, onNewPage);
+        doc.setFontSize(8);
+        doc.setTextColor(...COLORS.muted);
+        const detail = doc.splitTextToSize(pair.summary, contentWidth - 4);
+        detail.slice(0, 4).forEach((line) => {
+          y = ensureSpace(doc, y, LINE, MARGIN, onNewPage);
+          doc.text(line, MARGIN + 2, y);
+          y += LINE - 0.5;
+        });
+        doc.setTextColor(...COLORS.text);
+      }
+    });
+  }
+  y += 6;
+
+  // 5. Supporting evidence
+  y = ensureSpace(doc, y, 20, MARGIN, onNewPage);
+  y = drawSectionTitle(doc, '5. Supporting evidence (retrieved context)', y, MARGIN);
+
+  if (!evaluationPrepared) {
+    y = drawBodyText(doc, 'Not available — no evaluation included.', y, MARGIN, contentWidth);
+  } else {
+    const rag = evaluationPrepared.rag_explanation || {};
+    if (rag.summary) {
+      y = drawBodyText(doc, 'Regimen-level retrieved summary (RAG):', y, MARGIN, contentWidth);
+      y = drawBodyText(doc, rag.summary, y, MARGIN, contentWidth);
+      y += 2;
+    }
+    const mechList = rag.shared_mechanisms || [];
+    if (mechList.length > 0) {
+      y = drawBodyText(doc, `Shared mechanisms cited: ${mechList.join('; ')}`, y, MARGIN, contentWidth);
+    }
+    const ev = evaluationPrepared.evidence || {};
+    if (Object.keys(ev).length > 0) {
+      y += 2;
+      y = drawBodyText(doc, 'Source audit aggregates for this evaluation:', y, MARGIN, contentWidth);
+      if (ev.drugbank?.total != null) {
+        y = drawKeyValueRow(doc, 'DrugBank entries (total):', ev.drugbank.total, y, MARGIN, contentWidth);
+      }
+      if (ev.cpic?.total != null) {
+        y = drawKeyValueRow(doc, 'CPIC guideline hits (total):', ev.cpic.total, y, MARGIN, contentWidth);
+      }
+      if (ev.twosides && 'observed' in ev.twosides) {
+        y = drawKeyValueRow(
+          doc,
+          'TwoSides FAERS signal:',
+          ev.twosides.observed ? 'Observed in aggregated data' : 'Not observed in aggregated data',
+          y,
+          MARGIN,
+          contentWidth,
+        );
+      }
+    }
+    if (!rag.summary && !mechList.length && !Object.keys(ev).length) {
+      y = drawBodyText(doc, 'No supporting evidence text was returned for this evaluation.', y, MARGIN, contentWidth);
+    }
+    y += 2;
+    y = drawBodyText(
+      doc,
+      'Retrieved passages support interpretation; they are not independent clinical verification of the model output.',
+      y,
+      MARGIN,
+      contentWidth,
+    );
+  }
+  y += 6;
+
+  // 6. Methodology and limitations
+  y = ensureSpace(doc, y, 30, MARGIN, onNewPage);
+  y = drawSectionTitle(doc, '6. Methodology and limitations', y, MARGIN);
+  const methodology = [
+    'This portal combines a Temporal Graph Neural Network (TemporalDDI-GNN) regimen evaluator with retrieval-augmented generation (RAG) over curated drug and interaction knowledge sources.',
+    'Pairwise predictions are produced for each drug pair in the selected regimen; aggregate summary statistics reflect the highest-scoring pair and severity distribution across pairs.',
+    'Outputs are intended for clinical research and decision support prototyping only. Predictions require independent review against primary literature, formularies, and patient-specific factors.',
+    'The system does not assert regulatory approval, prospective clinical validation, or proven benefit for any individual patient.',
+  ];
+  methodology.forEach((para) => {
+    y = drawBodyText(doc, para, y, MARGIN, contentWidth);
+    y += 2;
+  });
+  y += 4;
+
+  // 7. Report provenance
+  y = ensureSpace(doc, y, 20, MARGIN, onNewPage);
+  y = drawSectionTitle(doc, '7. Report provenance', y, MARGIN);
+  y = drawKeyValueRow(doc, 'Report generated (local):', formatReportTimestamp(generatedAt), y, MARGIN, contentWidth);
+  y = drawKeyValueRow(doc, 'Patient identifier:', patientRecord.mrn, y, MARGIN, contentWidth);
+  if (evaluationPrepared?.prediction?.alertCode) {
+    y = drawKeyValueRow(doc, 'Evaluation alert reference:', evaluationPrepared.prediction.alertCode, y, MARGIN, contentWidth);
+  }
+  if (engineHealth?.engine?.status) {
+    y = drawKeyValueRow(doc, 'Engine status at generation:', engineHealth.engine.status, y, MARGIN, contentWidth);
+  }
+
+  addPageFooters(doc, patientRecord, generatedAt);
+
+  const safeName = patientRecord.name.replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 48);
+  const safeMrn = (patientRecord.mrn || 'record').replace(/[^a-zA-Z0-9_-]+/g, '_');
+  const filename = `DDI_Report_${safeName}_${safeMrn}.pdf`;
   doc.save(filename);
 }

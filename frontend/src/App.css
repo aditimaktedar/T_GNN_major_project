@@ -95,6 +95,19 @@
   background: var(--accent-hover);
 }
 
+.download-report-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.report-download-error {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--severity-major-text);
+  max-width: 11rem;
+  line-height: 1.3;
+}
+
 
 /* SLEEK THEME TOGGLE BUTTON */
 .theme-toggle-btn {
@@ -179,6 +192,42 @@
   flex-direction: column;
   gap: 1.5rem;
   min-width: 0;
+}
+
+/* Desktop: independent scroll regions for sidebar and main panel */
+@media (min-width: 961px) {
+  .app-layout.screenshot-theme {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+
+  .dashboard-grid-container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .left-sidebar-col {
+    position: static;
+    top: auto;
+    align-self: stretch;
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .right-main-col {
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
 }
 
 .main-panel-step {

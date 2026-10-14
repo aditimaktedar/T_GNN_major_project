@@ -4,12 +4,32 @@ Coordinates the end-to-end pipeline:
 Drug Query -> Drug Resolver -> T-GNN Model Inference -> RAG Evidence Retrieval -> Result Merger.
 """
 
+import re
 from typing import Dict, Any, List, Optional
 from api.drug_resolver import DrugResolver
 from api.gnn_service import GNNPredictionService
 from api.rag_service import RAGRetrievalService
 from api.merger import ResultMerger
 from api.schemas import MergedDDIResponse
+
+
+_DB_ID_PATTERN = re.compile(r"^DB\d+$", re.IGNORECASE)
+
+
+def _clinical_drug_name(entity, med_input: Dict[str, Any]) -> str:
+    """Prefer MAR/clinical names over resolver tokens that look like DrugBank IDs."""
+    for candidate in (med_input.get("name"), entity.name):
+        text = (candidate or "").strip()
+        if text and not _DB_ID_PATTERN.match(text):
+            return text
+    fallback = (entity.name or med_input.get("name") or entity.drugbank_id or "").strip()
+    return fallback
+
+
+def _drug_response_payload(entity, med_input: Dict[str, Any]) -> Dict[str, Any]:
+    payload = entity.to_dict()
+    payload["name"] = _clinical_drug_name(entity, med_input)
+    return payload
 
 
 class ClinicalDDIOrchestrator:
@@ -85,10 +105,12 @@ class ClinicalDDIOrchestrator:
                     fold=fold,
                     patient_id=patient_id
                 )
+                name_a = _clinical_drug_name(d_a, m_a)
+                name_b = _clinical_drug_name(d_b, m_b)
                 evaluated_pairs.append({
-                    "pair_label": f"{d_a.name} + {d_b.name}",
-                    "drug_1": d_a.to_dict(),
-                    "drug_2": d_b.to_dict(),
+                    "pair_label": f"{name_a} + {name_b}",
+                    "drug_1": _drug_response_payload(d_a, m_a),
+                    "drug_2": _drug_response_payload(d_b, m_b),
                     "prediction": res.prediction,
                     "evidence_summary": res.rag_explanation.get("summary", ""),
                     "full_response": res.to_dict()

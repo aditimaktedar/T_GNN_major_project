@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
+
+_DB_ID_PATTERN = re.compile(r"^DB\d+$", re.IGNORECASE)
 
 
 def _normalize_severity(severity: str) -> str:
@@ -12,26 +15,66 @@ def _normalize_severity(severity: str) -> str:
     return value
 
 
-def _pair_from_evaluated(entry: dict[str, Any]) -> dict[str, Any]:
+def _is_drugbank_id_token(value: str) -> bool:
+    return bool(_DB_ID_PATTERN.match((value or "").strip()))
+
+
+def _selected_drug_lookup(selected_drugs: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    lookup: dict[str, dict[str, Any]] = {}
+    for drug in selected_drugs or []:
+        db_id = (drug.get("drugbank_id") or drug.get("id") or "").strip().upper()
+        if db_id:
+            lookup[db_id] = drug
+    return lookup
+
+
+def _resolve_display_drug(drug_dict: dict[str, Any], lookup: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    db_id = (drug_dict.get("drugbank_id") or drug_dict.get("id") or "").strip().upper()
+    resolver_name = (drug_dict.get("name") or "").strip()
+    if _is_drugbank_id_token(resolver_name):
+        resolver_name = ""
+
+    clinical_name = ""
+    if db_id and db_id in lookup:
+        clinical_name = (lookup[db_id].get("name") or "").strip()
+        if _is_drugbank_id_token(clinical_name):
+            clinical_name = ""
+
+    name = clinical_name or resolver_name
+    unresolved = False
+    if not name:
+        name = "Name not resolved"
+        unresolved = True
+    elif _is_drugbank_id_token(name):
+        name = "Name not resolved"
+        unresolved = True
+
+    return {"id": db_id or None, "name": name, "nameUnresolved": unresolved}
+
+
+def _pair_identity_key(d1: dict[str, Any], d2: dict[str, Any]) -> tuple[str, str]:
+    a = (d1.get("id") or "").upper()
+    b = (d2.get("id") or "").upper()
+    return tuple(sorted((a, b)))
+
+
+def _pair_from_evaluated(entry: dict[str, Any], lookup: dict[str, dict[str, Any]]) -> dict[str, Any]:
     full = entry.get("full_response") or {}
     rag = full.get("rag_explanation") or {}
     pred = entry.get("prediction") or full.get("prediction") or {}
     d1 = entry.get("drug_1") or {}
     d2 = entry.get("drug_2") or {}
 
+    drug1 = _resolve_display_drug(d1, lookup)
+    drug2 = _resolve_display_drug(d2, lookup)
+
     mechanisms = rag.get("shared_mechanisms") or []
     mechanism_text = "; ".join(mechanisms) if mechanisms else None
 
     return {
-        "drug1": {
-            "id": d1.get("drugbank_id"),
-            "name": d1.get("name"),
-        },
-        "drug2": {
-            "id": d2.get("drugbank_id"),
-            "name": d2.get("name"),
-        },
-        "pairKey": entry.get("pair_label") or f"{d1.get('name', '?')} ↔ {d2.get('name', '?')}",
+        "drug1": drug1,
+        "drug2": drug2,
+        "pairKey": entry.get("pair_label") or f"{drug1.get('name', '?')} ↔ {drug2.get('name', '?')}",
         "probability": float(pred.get("probability", 0)),
         "severity": _normalize_severity(pred.get("severity", "LOW")),
         "interaction": pred.get("interaction", "NO"),
@@ -139,7 +182,18 @@ def orchestrator_regimen_to_portal(
 ) -> dict[str, Any]:
     """Convert ``evaluate_regimen`` output into the React portal JSON contract."""
     evaluated_pairs = orchestrator_result.get("evaluated_pairs") or []
-    pairs = [_pair_from_evaluated(entry) for entry in evaluated_pairs]
+    lookup = _selected_drug_lookup(selected_drugs)
+
+    pairs: list[dict[str, Any]] = []
+    seen_keys: set[tuple[str, str]] = set()
+    for entry in evaluated_pairs:
+        pair = _pair_from_evaluated(entry, lookup)
+        key = _pair_identity_key(pair["drug1"], pair["drug2"])
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        pairs.append(pair)
+
     pairs.sort(key=lambda item: item["probability"], reverse=True)
 
     highest_pair = pairs[0] if pairs else None
@@ -161,11 +215,15 @@ def orchestrator_regimen_to_portal(
 
     alert_code = highest_pair.get("alertCode") if highest_pair else f"CDSS-DDI-REG-{len(selected_drugs)}D"
 
+    n_meds = len(selected_drugs)
+    expected_pairs = (n_meds * (n_meds - 1)) // 2 if n_meds >= 2 else 0
+
     return {
         "selectedDrugs": selected_drugs,
         "pairs": pairs,
         "highestPair": highest_pair,
         "pairCount": len(pairs),
+        "expectedPairCount": expected_pairs,
         "majorCount": major_cnt,
         "modCount": mod_cnt,
         "lowCount": low_cnt,
@@ -183,5 +241,7 @@ def orchestrator_regimen_to_portal(
             "available_folds": meta.get("available_folds", []),
             "total_pairs_evaluated": orchestrator_result.get("total_pairs_evaluated", len(pairs)),
             "critical_alerts_count": orchestrator_result.get("critical_alerts_count", major_cnt),
+            "medication_count": n_meds,
+            "expected_pair_count": expected_pairs,
         },
     }
