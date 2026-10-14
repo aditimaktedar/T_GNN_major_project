@@ -6,13 +6,15 @@ import { PredictionPanel } from './components/PredictionPanel';
 import { RAGExplanation } from './components/RAGExplanation';
 import { EvidenceTree } from './components/EvidenceTree';
 import { COMMON_MEDICATIONS } from './data/commonMedications';
-import { 
-  fetchPatientProfile, 
-  updatePatientProfile, 
-  addMedicationOrder, 
-  discontinueMedicationOrder, 
-  evaluateRegimenDDI 
+import {
+  fetchPatientProfile,
+  updatePatientProfile,
+  addMedicationOrder,
+  discontinueMedicationOrder,
+  evaluateRegimenDDI,
+  fetchHealthStatus,
 } from './api/client';
+import { AllSectionsIcon, MedicationsIcon, RagIcon } from './components/SegmentIcons';
 import { generatePdfReport } from './utils/generatePdfReport';
  
 const MAX_MEDICATIONS = 15;
@@ -71,6 +73,9 @@ export default function App() {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [apiStatus, setApiStatus] = useState('checking'); // 'connected' | 'offline' | 'checking'
   const [activeEvaluatedData, setActiveEvaluatedData] = useState(null);
+  const [evaluationError, setEvaluationError] = useState(null);
+  const [loadNotice, setLoadNotice] = useState(null);
+  const evaluationAbortRef = useRef(null);
  
   const [newMedName, setNewMedName] = useState('');
   const [newMedId, setNewMedId] = useState('');
@@ -86,9 +91,10 @@ export default function App() {
  
   // Check backend health on mount
   useEffect(() => {
-    fetch('/api/health')
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then(() => setApiStatus('connected'))
+    fetchHealthStatus()
+      .then((health) => {
+        setApiStatus(health?.engine?.status === 'healthy' ? 'connected' : 'connected');
+      })
       .catch(() => setApiStatus('offline'));
   }, []);
  
@@ -106,10 +112,13 @@ export default function App() {
           // Initial evaluation query to database
           const evalResult = await evaluateRegimenDDI(initialSelected);
           setActiveEvaluatedData(evalResult);
+          setEvaluationError(null);
         }
       } catch (err) {
         console.warn("Could not load from API server, initializing default state:", err);
         setSelectedDrugs(fallbackPatient.medications.slice(0, 3));
+        setLoadNotice(err.message || 'Backend unavailable. Patient data may be stale until the API is running.');
+        setApiStatus('offline');
       } finally {
         setIsLoadingDB(false);
       }
@@ -149,16 +158,26 @@ export default function App() {
       return;
     }
  
+    if (isEvaluating) return;
+
+    if (evaluationAbortRef.current) {
+      evaluationAbortRef.current.abort();
+    }
+    const controller = new AbortController();
+    evaluationAbortRef.current = controller;
+
     setIsEvaluating(true);
- 
+    setEvaluationError(null);
+
     try {
-      const evaluationResult = await evaluateRegimenDDI(selectedDrugs);
+      const evaluationResult = await evaluateRegimenDDI(selectedDrugs, { signal: controller.signal });
       setActiveEvaluatedData(evaluationResult);
       setApiStatus('connected');
     } catch (err) {
+      if (err.name === 'AbortError') return;
       console.error("Evaluation API failed:", err);
+      setEvaluationError(err.message || 'Evaluation request failed.');
       setApiStatus('offline');
-      alert("Evaluation request failed. Please check backend database connectivity.");
     } finally {
       setIsEvaluating(false);
  
@@ -175,17 +194,16 @@ export default function App() {
       setPatient((prev) => ({
         ...prev,
         name: updated.name || updatedProfile.name,
-        age: updated.age || updatedProfile.age,
+        age: updated.age ?? updatedProfile.age,
         gender: updated.gender || updatedProfile.gender || prev.gender,
       }));
+      return { ok: true };
     } catch (err) {
       console.error("Failed to update patient profile in DB:", err);
-      setPatient((prev) => ({
-        ...prev,
-        name: updatedProfile.name,
-        age: updatedProfile.age,
-        gender: updatedProfile.gender || prev.gender,
-      }));
+      return {
+        ok: false,
+        message: err.message || 'Unable to reach the patient API. Check that the backend is running.',
+      };
     }
   };
  
@@ -357,7 +375,7 @@ export default function App() {
       <header className="screenshot-top-nav">
         <div className="nav-brand">
           <span className="brand-dot"></span>
-          <span className="brand-text">Clinical Portal &bull; T-GNN Polypharmacy DDI Evaluator</span>
+          <span className="brand-text">DDI Research Portal</span>
           <span className="db-status-badge">
             <span className="live-db-dot"></span>
           </span>
@@ -402,18 +420,18 @@ export default function App() {
           </button>
         </div>
  
-        {/* API connection status indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <span style={{
-            display: 'inline-block',
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: apiStatus === 'connected' ? '#10b981' : '#f59e0b',
-            boxShadow: apiStatus === 'connected' ? '0 0 8px #10b981' : 'none'
-          }}></span>
-          <span style={{ color: '#e2e8f0', fontWeight: 500 }}>
-            {apiStatus === 'connected' ? 'Live T-GNN v2 + RAG API' : apiStatus === 'checking' ? 'Connecting…' : 'API Offline'}
+        <div
+          className={`api-status-pill ${apiStatus === 'connected' ? 'connected' : ''}`}
+          role="status"
+          aria-live="polite"
+        >
+          <span className="api-status-dot" aria-hidden="true" />
+          <span>
+            {apiStatus === 'connected'
+              ? 'Model service connected'
+              : apiStatus === 'checking'
+                ? 'Checking connection…'
+                : 'Model service offline'}
           </span>
         </div>
       </header>
@@ -440,7 +458,7 @@ export default function App() {
                 className={`segment-tab ${activeSegment === 'medications' ? 'active' : ''}`}
                 onClick={() => setActiveSegment('medications')}
               >
-                <span className="segment-icon">💊</span>
+                <MedicationsIcon />
                 <span className="segment-title">Medications & DDI Evaluation</span>
                 <span className="segment-badge">{patient.medications.length} Meds</span>
               </button>
@@ -449,8 +467,8 @@ export default function App() {
                 className={`segment-tab ${activeSegment === 'rag' ? 'active' : ''}`}
                 onClick={() => setActiveSegment('rag')}
               >
-                <span className="segment-icon">🔬</span>
-                <span className="segment-title">RAG Implementation & Evidence</span>
+                <RagIcon />
+                <span className="segment-title">Evidence & explanation</span>
                 
               </button>
  
@@ -458,12 +476,42 @@ export default function App() {
                 className={`segment-tab ${activeSegment === 'all' ? 'active' : ''}`}
                 onClick={() => setActiveSegment('all')}
               >
-                <span className="segment-icon">📊</span>
+                <AllSectionsIcon />
                 <span className="segment-title">All Sections</span>
               </button>
             </div>
           </div>
- 
+
+          <p className="clinical-disclaimer" role="note">
+            This tool shows research-model predictions and retrieved reference text. It is not a clinical
+            diagnosis, prescribing guide, or substitute for a licensed clinician.
+          </p>
+
+          <ol className="workflow-steps" aria-label="Evaluation workflow">
+            <li>
+              <span className="workflow-step-num">1.</span> Select two or more medications in the table
+            </li>
+            <li>
+              <span className="workflow-step-num">2.</span> Run interaction evaluation
+            </li>
+            <li>
+              <span className="workflow-step-num">3.</span> Review summary, then evidence if needed
+            </li>
+          </ol>
+
+          {(loadNotice || evaluationError) && (
+            <div className={`portal-alert ${evaluationError ? 'portal-alert-error' : 'portal-alert-warning'}`} role="alert">
+              <strong>{evaluationError ? 'Evaluation failed' : 'Notice'}</strong>
+              <span>{evaluationError || loadNotice}</span>
+            </div>
+          )}
+
+          {isLoadingDB && (
+            <div className="portal-loading-banner" role="status">
+              Loading patient regimen and running initial DDI evaluation…
+            </div>
+          )}
+
           {/* SEGMENT 1: MEDICATIONS & DDI EVALUATION */}
           {showMedicationsSegment && (
             <>
@@ -478,8 +526,8 @@ export default function App() {
                           {patient.medications.length} / {MAX_MEDICATIONS} Max (Database Capacity)
                         </span>
                       </div>
-                      <span className="timeline-date-stamp">
-                        Fetched from SQLite Database • Select 2, 3+ medications below to evaluate polypharmacy DDI risk
+                      <span className="section-helper">
+                        Check medications to include in the next evaluation. At least two are required.
                       </span>
                     </div>
  
@@ -607,15 +655,25 @@ export default function App() {
               </div>
  
               {/* 3. DDI Risk Prediction Panel */}
-              {activeEvaluatedData && (
-                <div className="main-panel-step" ref={predictionRef} id="sec-prediction">
-                  <PredictionPanel 
+              <div className="main-panel-step" ref={predictionRef} id="sec-prediction">
+                {isEvaluating && !activeEvaluatedData ? (
+                  <div className="screenshot-card portal-empty-state">
+                    <p className="portal-empty-title">Running T-GNN + RAG evaluation</p>
+                    <p className="portal-empty-copy">Analyzing pairwise interactions across the selected regimen.</p>
+                  </div>
+                ) : activeEvaluatedData ? (
+                  <PredictionPanel
                     prediction={activeEvaluatedData.prediction}
                     evaluationData={activeEvaluatedData}
                     isEvaluating={isEvaluating}
                   />
-                </div>
-              )}
+                ) : (
+                  <div className="screenshot-card portal-empty-state">
+                    <p className="portal-empty-title">No evaluation results yet</p>
+                    <p className="portal-empty-copy">Select at least two medications and run DDI evaluation.</p>
+                  </div>
+                )}
+              </div>
             </>
           )}
  
@@ -626,7 +684,7 @@ export default function App() {
               {activeSegment === 'rag' && (
                 <div className="screenshot-card rag-context-banner">
                   <div className="banner-left">
-                    <span className="banner-icon">🔬</span>
+                    <RagIcon className="banner-icon-svg" />
                     <div className="banner-text">
                       <strong>Active RAG Regimen Context:</strong> {selectedDrugs.map(d => d.name).join(' + ')}
                     </div>

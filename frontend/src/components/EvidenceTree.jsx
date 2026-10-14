@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './EvidenceTree.css';
+import { BookIcon, ChartIcon, DnaIcon, FolderIcon, ShieldIcon } from './SegmentIcons';
 
 export function EvidenceTree({ evidence, selectedDrugs = [], drug1Name, drug2Name }) {
   const [expandedNodes, setExpandedNodes] = useState({
@@ -16,6 +17,7 @@ export function EvidenceTree({ evidence, selectedDrugs = [], drug1Name, drug2Nam
   if (!evidence) return null;
 
   const { drugbank, cpic, twosides, offsides, drugCounts } = evidence;
+  const offsidesAvailable = offsides?.available !== false;
 
   // Build array of drug names for tree leaves
   const activeDrugs = selectedDrugs.length > 0 
@@ -43,7 +45,7 @@ export function EvidenceTree({ evidence, selectedDrugs = [], drug1Name, drug2Nam
 
         <div className="evidence-tree-inner">
           <div className="tree-root-label-row">
-            <span className="root-folder">📂</span>
+            <FolderIcon className="root-folder-icon" />
             <span>Multi-Source Polypharmacy Verification</span>
           </div>
 
@@ -52,7 +54,7 @@ export function EvidenceTree({ evidence, selectedDrugs = [], drug1Name, drug2Nam
             <div className="tree-branch-block">
               <div className="branch-header-line" onClick={() => toggleNode('drugbank')}>
                 <span className="branch-symbol">├──</span>
-                <span className="branch-icon">📚</span>
+                <BookIcon className="branch-icon-svg" />
                 <span className="branch-name">DrugBank Evidence</span>
                 <span className="branch-pill-badge blue">{totalDrugBank} entries</span>
               </div>
@@ -76,7 +78,7 @@ export function EvidenceTree({ evidence, selectedDrugs = [], drug1Name, drug2Nam
             <div className="tree-branch-block">
               <div className="branch-header-line" onClick={() => toggleNode('cpic')}>
                 <span className="branch-symbol">├──</span>
-                <span className="branch-icon">🧬</span>
+                <DnaIcon className="branch-icon-svg" />
                 <span className="branch-name">CPIC Guidelines</span>
                 <span className="branch-pill-badge blue">{totalCPIC} guidelines</span>
               </div>
@@ -100,7 +102,7 @@ export function EvidenceTree({ evidence, selectedDrugs = [], drug1Name, drug2Nam
             <div className="tree-branch-block">
               <div className="branch-header-line" onClick={() => toggleNode('twosides')}>
                 <span className="branch-symbol">├──</span>
-                <span className="branch-icon">⚠️</span>
+                <ChartIcon className="branch-icon-svg" />
                 <span className="branch-name">TWOSIDES Observatory</span>
                 <span className={`branch-pill-badge ${twosides?.observed ? 'warning' : 'neutral'}`}>
                   {twosides?.observed ? 'Observed Polypharmacy ADRs' : 'Not Observed'}
@@ -112,9 +114,11 @@ export function EvidenceTree({ evidence, selectedDrugs = [], drug1Name, drug2Nam
             <div className="tree-branch-block">
               <div className="branch-header-line" onClick={() => toggleNode('offsides')}>
                 <span className="branch-symbol">└──</span>
-                <span className="branch-icon">🔍</span>
+                <ShieldIcon className="branch-icon-svg" />
                 <span className="branch-name">OFFSIDES Profile</span>
-                <span className="branch-pill-badge success">Available for Regimen</span>
+                <span className="branch-pill-badge success">
+                  {offsidesAvailable ? 'Available for Regimen' : 'Limited Coverage'}
+                </span>
               </div>
             </div>
           </div>

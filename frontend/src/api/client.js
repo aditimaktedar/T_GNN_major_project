@@ -5,79 +5,72 @@ const API_BASE_URL = '/api';
  * Connects frontend directly to Python Flask REST API & SQLite Database
  */
 
-export async function fetchPatientProfile() {
+async function parseApiError(response) {
+  let message = `Request failed (${response.status})`;
   try {
-    const response = await fetch(`${API_BASE_URL}/patient`);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (err) {
-    console.error("API Error fetching patient profile:", err);
-    throw err;
+    const payload = await response.json();
+    if (payload?.error) {
+      message = payload.detail ? `${payload.error}: ${payload.detail}` : payload.error;
+    }
+  } catch {
+    // ignore JSON parse errors
   }
+  return message;
+}
+
+export async function fetchPatientProfile() {
+  const response = await fetch(`${API_BASE_URL}/patient`);
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+  return response.json();
 }
 
 export async function updatePatientProfile(profileData) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/patient`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(profileData),
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (err) {
-    console.error("API Error updating patient profile:", err);
-    throw err;
+  const response = await fetch(`${API_BASE_URL}/patient`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(profileData),
+  });
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
   }
+  return response.json();
 }
 
 export async function addMedicationOrder(medData) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/medications`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(medData),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (err) {
-    console.error("API Error adding medication order:", err);
-    throw err;
+  const response = await fetch(`${API_BASE_URL}/medications`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(medData),
+  });
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
   }
+  return response.json();
 }
 
 export async function discontinueMedicationOrder(medId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/medications/${medId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (err) {
-    console.error("API Error discontinuing medication order:", err);
-    throw err;
+  const response = await fetch(`${API_BASE_URL}/medications/${medId}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
   }
+  return response.json();
 }
 
-export async function evaluateRegimenDDI(selectedDrugs) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/evaluate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ selectedDrugs }),
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (err) {
-    console.error("API Error evaluating regimen DDI:", err);
-    throw err;
+export async function evaluateRegimenDDI(selectedDrugs, options = {}) {
+  const response = await fetch(`${API_BASE_URL}/evaluate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ selectedDrugs }),
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
   }
+  return response.json();
 }
 
 export async function fetchDrugCatalog() {
@@ -86,7 +79,15 @@ export async function fetchDrugCatalog() {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (err) {
-    console.error("API Error fetching drug catalog:", err);
+    console.error('API Error fetching drug catalog:', err);
     return [];
   }
+}
+
+export async function fetchHealthStatus() {
+  const response = await fetch(`${API_BASE_URL}/health`);
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+  return response.json();
 }

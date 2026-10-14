@@ -1,74 +1,103 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './PredictionPanel.css';
 
-export function PredictionPanel({ prediction, evaluationData }) {
+function confidenceLabel(probability) {
+  const p = probability ?? 0;
+  if (p >= 0.75) return 'Higher model score';
+  if (p >= 0.5) return 'Moderate model score';
+  return 'Lower model score';
+}
+
+export function PredictionPanel({ prediction, evaluationData, isEvaluating = false }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
   if (!prediction) return null;
 
   const { interaction, probability, severity, source } = prediction;
-  const percentage = Math.round((probability || 0.74) * 100);
+  const percentage = Math.round((probability ?? 0) * 100);
 
   const selectedDrugs = evaluationData?.selectedDrugs || [];
   const pairCount = evaluationData?.pairCount || 1;
   const highestPair = evaluationData?.highestPair;
 
+  const interactionYes = String(interaction).toUpperCase() === 'YES';
+
   return (
-    <div className="screenshot-card prediction-card">
+    <div className={`screenshot-card prediction-card ${isEvaluating ? 'is-refreshing' : ''}`}>
+      {isEvaluating && (
+        <div className="prediction-refresh-note" role="status">
+          Updating results…
+        </div>
+      )}
+
       <div className="card-top-title-row">
         <div className="title-with-badge">
           <h3 className="card-main-title">
-            {selectedDrugs.length >= 3 
-              ? `Polypharmacy Interaction Risk (${selectedDrugs.length} Drugs)` 
-              : 'DDI Interaction Risk Prediction'}
+            {selectedDrugs.length >= 3 ? 'Regimen interaction summary' : 'Interaction summary'}
           </h3>
-          <span className="gnn-source-tag">{source || 'T-GNN Clinical Engine'}</span>
+          <p className="section-helper">
+            Model prediction only — confirm with clinical references and local protocols.
+          </p>
         </div>
       </div>
 
       <div className="prediction-boxes-row">
-        {/* Interaction Status */}
         <div className="prediction-box interaction-result">
-          <span className="box-mini-label">INTERACTION STATUS</span>
-          <div className={`status-pill-badge ${interaction.toLowerCase()}`}>
-            <span className="pill-dot"></span>
+          <span className="box-mini-label">Predicted interaction</span>
+          <div className={`status-pill-badge ${interactionYes ? 'yes' : 'no'}`}>
+            <span className="pill-dot" aria-hidden="true" />
             <span className="pill-text">
-              {interaction === 'YES' 
-                ? (selectedDrugs.length >= 3 ? 'YES — POLYPHARMACY DDI DETECTED' : 'YES — INTERACTION DETECTED') 
-                : 'NO INTERACTION DETECTED'}
+              {interactionYes
+                ? selectedDrugs.length >= 3
+                  ? 'Interaction signal in regimen'
+                  : 'Interaction signal detected'
+                : 'No interaction signal'}
             </span>
           </div>
           {selectedDrugs.length >= 3 && (
-            <span className="poly-pairs-subtext">
-              {pairCount} Pairwise Interactions Analyzed
-            </span>
+            <span className="poly-pairs-subtext">{pairCount} drug pairs analyzed</span>
           )}
         </div>
 
-        {/* Probability */}
         <div className="prediction-box probability-result">
-          <span className="box-mini-label">HIGHEST MODEL PROBABILITY</span>
+          <span className="box-mini-label">Highest pairwise score</span>
           <div className="prob-text-group">
             <span className="prob-big">{percentage}%</span>
-            <span className="prob-confidence">High Confidence</span>
+            <span className="prob-confidence">{confidenceLabel(probability)}</span>
           </div>
-          <div className="prob-progress-track">
-            <div className="prob-progress-bar" style={{ width: `${percentage}%` }}></div>
+          <div className="prob-progress-track" role="presentation">
+            <div className="prob-progress-bar" style={{ width: `${percentage}%` }} />
           </div>
+          <span className="poly-pairs-subtext">Not a probability of clinical harm</span>
         </div>
 
-        {/* Severity */}
         <div className="prediction-box severity-result">
-          <span className="box-mini-label">OVERALL SEVERITY LEVEL</span>
+          <span className="box-mini-label">Severity label</span>
           <div className={`severity-flag-badge ${severity.toLowerCase()}`}>
-            <span className="severity-pulse-dot"></span>
-            <span>{severity} SEVERITY</span>
+            <span className="severity-pulse-dot" aria-hidden="true" />
+            <span>{severity}</span>
           </div>
           {highestPair && (
             <span className="highest-pair-subtext">
-              Max Risk Pair: <strong>{highestPair.drug1.name} &bull; {highestPair.drug2.name}</strong>
+              Highest-scoring pair: {highestPair.drug1.name} · {highestPair.drug2.name}
             </span>
           )}
         </div>
       </div>
+
+      {source && (
+        <div className="prediction-details-block">
+          <button
+            type="button"
+            className="details-toggle-btn"
+            onClick={() => setDetailsOpen((o) => !o)}
+            aria-expanded={detailsOpen}
+          >
+            {detailsOpen ? 'Hide technical source' : 'Show technical source'}
+          </button>
+          {detailsOpen && <p className="prediction-source-line">{source}</p>}
+        </div>
+      )}
     </div>
   );
 }

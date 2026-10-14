@@ -176,19 +176,39 @@
   width: 4px;
 }
 
-.highlight-accent-line.blue { background: var(--soft-blue-border); }
-.highlight-accent-line.pink { background: var(--soft-pink-border); }
-.highlight-accent-line.purple { background: var(--soft-purple-border); }
-.highlight-accent-line.amber { background: var(--soft-amber-border); }
-.highlight-accent-line.emerald { background: var(--soft-emerald-border); }
-.highlight-accent-line.teal { background: #0d9488; }
+.highlight-accent-line.accent,
+.highlight-accent-line.blue { background: var(--accent-soft-border); }
 
-.drug-appointment-item.blue-highlight { background: var(--soft-blue-bg); }
-.drug-appointment-item.pink-highlight { background: var(--soft-pink-bg); }
-.drug-appointment-item.purple-highlight { background: var(--soft-purple-bg); }
-.drug-appointment-item.amber-highlight { background: var(--soft-amber-bg); }
-.drug-appointment-item.emerald-highlight { background: var(--soft-emerald-bg); }
-.drug-appointment-item.teal-highlight { background: rgba(13, 148, 136, 0.15); }
+.drug-appointment-item.accent-highlight,
+.drug-appointment-item.blue-highlight { background: var(--bg-card); }
+
+.inline-helper {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.matrix-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.matrix-toggle-btn .chevron-toggle {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  transition: transform 0.15s ease;
+}
+
+.matrix-toggle-btn .chevron-toggle.open {
+  transform: rotate(180deg);
+}
 
 .item-content-group {
   display: flex;
@@ -216,12 +236,8 @@
   border-radius: 4px;
 }
 
-.code-chip.blue { background: rgba(2, 132, 199, 0.15); color: var(--soft-blue-text); }
-.code-chip.pink { background: rgba(219, 39, 119, 0.15); color: var(--soft-pink-text); }
-.code-chip.purple { background: rgba(147, 51, 234, 0.15); color: var(--soft-purple-text); }
-.code-chip.amber { background: rgba(217, 119, 6, 0.15); color: var(--soft-amber-text); }
-.code-chip.emerald { background: rgba(5, 150, 105, 0.15); color: var(--soft-emerald-text); }
-.code-chip.teal { background: rgba(13, 148, 136, 0.15); color: #14b8a6; }
+.code-chip.accent,
+.code-chip.blue { background: var(--accent-soft-bg); color: var(--accent-soft-text); }
 
 .item-subtext {
   font-size: 0.775rem;
@@ -319,15 +335,15 @@
 }
 
 .pair-breakdown-card.severity-major {
-  border-left: 4px solid #ef4444;
+  border-left: 3px solid var(--severity-major-border);
 }
 
 .pair-breakdown-card.severity-moderate {
-  border-left: 4px solid #f59e0b;
+  border-left: 3px solid var(--severity-moderate-border);
 }
 
 .pair-breakdown-card.severity-low {
-  border-left: 4px solid #10b981;
+  border-left: 3px solid var(--severity-low-border);
 }
 
 .pair-card-top {
@@ -353,7 +369,7 @@
 }
 
 .pair-arrow {
-  color: var(--primary-blue);
+  color: var(--text-muted);
 }
 
 .pair-metrics {
@@ -371,18 +387,18 @@
 }
 
 .pair-sev-tag.major {
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--severity-major-bg);
+  color: var(--severity-major-text);
 }
 
 .pair-sev-tag.moderate {
-  background: #fffbeb;
-  color: #d97706;
+  background: var(--severity-moderate-bg);
+  color: var(--severity-moderate-text);
 }
 
 .pair-sev-tag.low {
-  background: #ecfdf5;
-  color: #059669;
+  background: var(--severity-low-bg);
+  color: var(--severity-low-text);
 }
 
 .pair-prob-val {

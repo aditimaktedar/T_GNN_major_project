@@ -43,13 +43,23 @@ A clinical decision support portal powered by **Temporal Graph Neural Networks (
    cd T_GNN_major_project
    ```
 
-2. **Frontend Development Server**
+2. **Backend API (patient MAR + T-GNN/RAG evaluation)**
+   From the repository root, using the project virtual environment:
+   ```bash
+   source .venv/bin/activate
+   python -m src.init_db   # first run only (creates data/clinical_ddi.db)
+   python src/server.py    # default http://localhost:5001 (PORT=5001; macOS often uses 5000 for AirPlay)
+   ```
+
+3. **Frontend Development Server**
    ```bash
    cd frontend
    npm install
    npm run dev
    ```
    Open `http://localhost:5173` (or the Vite assigned port) in your browser.
+
+   The frontend calls `POST /api/evaluate` with `{ selectedDrugs }`. The Flask portal server runs the **TemporalDDI-GNN + RAG orchestrator** and returns the portal JSON contract (pairs, prediction, RAG explanation, evidence).
 
 3. **Build for Production**
    ```bash

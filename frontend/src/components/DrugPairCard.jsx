@@ -1,70 +1,69 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './DrugPairCard.css';
 import { PRESET_DRUG_PAIRS } from '../data/commonMedications';
+import { BoltLabelIcon, PillLabelIcon } from './SegmentIcons';
 
-const ACCENT_COLORS = [
-  'blue', 'pink', 'purple', 'amber', 'emerald', 'teal'
-];
-
-export function DrugPairCard({ 
-  selectedDrugs = [], 
-  availableMeds = [], 
-  evaluationData, 
-  onRunEvaluation, 
+export function DrugPairCard({
+  selectedDrugs = [],
+  availableMeds = [],
+  evaluationData,
+  onRunEvaluation,
   isEvaluating,
   onSelectDrug1,
   onSelectDrug2,
-  onSelectPresetPair
+  onSelectPresetPair,
 }) {
+  const [matrixOpen, setMatrixOpen] = useState(false);
   const pairs = evaluationData?.pairs || [];
   const isMultiDrug = selectedDrugs.length >= 3;
+  const canEvaluate = selectedDrugs.length >= 2 && !isEvaluating;
 
   const drug1 = selectedDrugs[0] || availableMeds[0] || {};
   const drug2 = selectedDrugs[1] || availableMeds[1] || {};
 
   return (
     <div className="screenshot-card appointments-card">
-      {/* Top Header Row */}
       <div className="card-top-title-row">
         <div className="title-group">
           <h3 className="card-main-title">
-            {isMultiDrug ? 'Evaluated Regimen & Pairwise Matrix' : 'Evaluated Drug Pair'}
+            {isMultiDrug ? 'Selected regimen' : 'Primary drug pair'}
           </h3>
           <span className="selected-count-badge">
-            {selectedDrugs.length} Drugs Selected {pairs.length > 0 ? `• ${pairs.length} Pair Interactions` : ''}
+            {selectedDrugs.length} selected
+            {pairs.length > 0 ? ` · ${pairs.length} pairwise checks` : ''}
+          </span>
+          <span className="section-helper inline-helper">
+            Choose drugs for quick pair focus, or use the medication table for full regimen selection.
           </span>
         </div>
 
         {onRunEvaluation && (
-          <button 
+          <button
+            type="button"
             className={`run-eval-primary-btn ${isEvaluating ? 'evaluating' : ''}`}
             onClick={onRunEvaluation}
-            disabled={isEvaluating}
+            disabled={!canEvaluate}
+            title={selectedDrugs.length < 2 ? 'Select at least two medications first' : undefined}
           >
             {isEvaluating ? (
               <>
-                <span className="eval-spinner"></span>
-                <span>Evaluating T-GNN Graph...</span>
+                <span className="eval-spinner" aria-hidden="true" />
+                <span>Evaluating interactions…</span>
               </>
             ) : (
-              <>
-                <svg className="lightning-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M13 2L3 14h7v8l10-12h-7z" />
-                </svg>
-                <span>Run {selectedDrugs.length}+ Drug DDI Evaluation</span>
-              </>
+              <span>Run interaction evaluation</span>
             )}
           </button>
         )}
       </div>
 
-      {/* Medication Dropdown Selection Toolbar */}
       <div className="drug-dropdown-toolbar">
         <div className="dropdown-tool-group">
-          <label className="dropdown-label font-bold">
-            <span className="lbl-icon">💊</span> Select Drug A:
+          <label className="dropdown-label font-bold" htmlFor="drug-a-select">
+            <PillLabelIcon /> Drug A
           </label>
-          <select 
+          <select
+            id="drug-a-select"
             className="med-select-dropdown"
             value={drug1.id || drug1.drugbank_id || ''}
             onChange={(e) => onSelectDrug1 && onSelectDrug1(e.target.value)}
@@ -77,13 +76,16 @@ export function DrugPairCard({
           </select>
         </div>
 
-        <span className="dropdown-vs-badge">VS</span>
+        <span className="dropdown-vs-badge" aria-hidden="true">
+          vs
+        </span>
 
         <div className="dropdown-tool-group">
-          <label className="dropdown-label font-bold">
-            <span className="lbl-icon">💊</span> Select Drug B:
+          <label className="dropdown-label font-bold" htmlFor="drug-b-select">
+            <PillLabelIcon /> Drug B
           </label>
-          <select 
+          <select
+            id="drug-b-select"
             className="med-select-dropdown"
             value={drug2.id || drug2.drugbank_id || ''}
             onChange={(e) => onSelectDrug2 && onSelectDrug2(e.target.value)}
@@ -98,15 +100,18 @@ export function DrugPairCard({
 
         {onSelectPresetPair && (
           <div className="dropdown-tool-group preset-group">
-            <label className="dropdown-label font-bold">
-              <span className="lbl-icon">⚡</span> Quick DDI Presets:
+            <label className="dropdown-label font-bold" htmlFor="preset-pair-select">
+              <BoltLabelIcon /> Common pair preset
             </label>
-            <select 
+            <select
+              id="preset-pair-select"
               className="med-select-dropdown preset-dropdown"
               defaultValue=""
               onChange={(e) => e.target.value && onSelectPresetPair(e.target.value)}
             >
-              <option value="" disabled>-- Choose Common Clinical Pair --</option>
+              <option value="" disabled>
+                Choose a preset pair
+              </option>
               {PRESET_DRUG_PAIRS.map((preset, idx) => (
                 <option key={idx} value={preset.pair.join('+')}>
                   {preset.label}
@@ -117,89 +122,94 @@ export function DrugPairCard({
         )}
       </div>
 
-      {/* Selected Medications Grid/List */}
       <div className="selected-meds-container">
-        <div className="sub-section-label">
-          SELECTED PATIENT MEDICATIONS ({selectedDrugs.length} ACTIVE IN REGIMEN)
-        </div>
+        <div className="sub-section-label">Medications in this evaluation</div>
 
         <div className={`drug-items-grid ${selectedDrugs.length > 3 ? 'compact-grid' : ''}`}>
-          {selectedDrugs.map((drug, index) => {
-            const colorScheme = ACCENT_COLORS[index % ACCENT_COLORS.length];
-            return (
-              <div 
-                key={drug.id || index} 
-                className={`drug-appointment-item ${colorScheme}-highlight`}
-              >
-                <div className={`highlight-accent-line ${colorScheme}`}></div>
-                <div className="item-content-group">
-                  <div className="drug-header-title">
-                    <strong className="drug-name-text">{drug.name}</strong>
-                    <span className={`code-chip ${colorScheme}`}>{drug.id}</span>
-                  </div>
-                  <span className="item-subtext">
-                    Drug #{index + 1} &bull; {drug.dosage || '40 mg'} {drug.frequency || 'QD'}
-                  </span>
+          {selectedDrugs.map((drug, index) => (
+            <div key={drug.id || index} className="drug-appointment-item accent-highlight">
+              <div className="highlight-accent-line accent" />
+              <div className="item-content-group">
+                <div className="drug-header-title">
+                  <strong className="drug-name-text">{drug.name}</strong>
+                  <span className="code-chip accent">{drug.id}</span>
                 </div>
-                <div className="right-checks">
-                  <span className="drug-num-badge">{index + 1}</span>
-                </div>
+                <span className="item-subtext">
+                  #{index + 1} · {drug.dosage || '—'} · {drug.frequency || '—'}
+                </span>
               </div>
-            );
-          })}
+              <div className="right-checks">
+                <span className="drug-num-badge">{index + 1}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* 3+ Drug Pairwise Interaction Matrix */}
       {pairs.length > 0 && (
         <div className="pairwise-matrix-section">
           <div className="matrix-header-row">
-            <h4 className="matrix-title">
-              Pairwise Drug-Drug Interaction Breakdown ({pairs.length} Pairs Analyzed)
-            </h4>
+            <button
+              type="button"
+              className="matrix-toggle-btn"
+              onClick={() => setMatrixOpen((o) => !o)}
+              aria-expanded={matrixOpen}
+            >
+              <h4 className="matrix-title">
+                Pairwise breakdown ({pairs.length} pairs)
+              </h4>
+              <svg
+                className={`chevron-toggle ${matrixOpen ? 'open' : ''}`}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
             <div className="matrix-summary-pills">
               {evaluationData?.majorCount > 0 && (
-                <span className="matrix-pill major">{evaluationData.majorCount} Major Risk</span>
+                <span className="matrix-pill major">{evaluationData.majorCount} major</span>
               )}
               {evaluationData?.modCount > 0 && (
-                <span className="matrix-pill moderate">{evaluationData.modCount} Moderate Risk</span>
+                <span className="matrix-pill moderate">{evaluationData.modCount} moderate</span>
               )}
               {evaluationData?.lowCount > 0 && (
-                <span className="matrix-pill low">{evaluationData.lowCount} Low Risk</span>
+                <span className="matrix-pill low">{evaluationData.lowCount} low</span>
               )}
             </div>
           </div>
 
-          <div className="pairwise-cards-list">
-            {pairs.map((pair, idx) => (
-              <div key={idx} className={`pair-breakdown-card severity-${pair.severity.toLowerCase()}`}>
-                <div className="pair-card-top">
-                  <div className="pair-drugs-names">
-                    <span className="pair-drug-badge">{pair.drug1.name}</span>
-                    <span className="pair-arrow">&harr;</span>
-                    <span className="pair-drug-badge">{pair.drug2.name}</span>
+          {matrixOpen && (
+            <div className="pairwise-cards-list">
+              {pairs.map((pair, idx) => (
+                <div key={idx} className={`pair-breakdown-card severity-${pair.severity.toLowerCase()}`}>
+                  <div className="pair-card-top">
+                    <div className="pair-drugs-names">
+                      <span className="pair-drug-badge">{pair.drug1.name}</span>
+                      <span className="pair-arrow" aria-hidden="true">
+                        ↔
+                      </span>
+                      <span className="pair-drug-badge">{pair.drug2.name}</span>
+                    </div>
+                    <div className="pair-metrics">
+                      <span className={`pair-sev-tag ${pair.severity.toLowerCase()}`}>{pair.severity}</span>
+                      <span className="pair-prob-val">{Math.round(pair.probability * 100)}% model score</span>
+                    </div>
                   </div>
-                  <div className="pair-metrics">
-                    <span className={`pair-sev-tag ${pair.severity.toLowerCase()}`}>
-                      {pair.severity}
-                    </span>
-                    <span className="pair-prob-val">
-                      {Math.round(pair.probability * 100)}% Risk
-                    </span>
-                  </div>
-                </div>
 
-                {pair.mechanism && (
-                  <div className="pair-card-mechanism">
-                    <span className="mech-label">Mechanism:</span> {pair.mechanism}
-                  </div>
-                )}
-                {pair.summary && (
-                  <p className="pair-card-summary">{pair.summary}</p>
-                )}
-              </div>
-            ))}
-          </div>
+                  {pair.mechanism && (
+                    <div className="pair-card-mechanism">
+                      <span className="mech-label">Mechanism:</span> {pair.mechanism}
+                    </div>
+                  )}
+                  {pair.summary && <p className="pair-card-summary">{pair.summary}</p>}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -93,6 +93,29 @@ class DDIRequestHandler(BaseHTTPRequestHandler):
         orch = ClinicalDDIOrchestrator.get_instance()
 
         if path in ("/api/evaluate", "/api/predict"):
+            selected_drugs = payload.get("selectedDrugs") or payload.get("medications")
+            if selected_drugs and isinstance(selected_drugs, list):
+                if len(selected_drugs) < 2:
+                    self._send_json(400, {"error": "At least 2 drugs are required for evaluation"})
+                    return
+                try:
+                    from api.portal_adapter import orchestrator_regimen_to_portal
+                    engine_meta = orch.health()
+                    regimen_result = orch.evaluate_regimen(
+                        medications=selected_drugs,
+                        fold=payload.get("fold"),
+                        patient_id=payload.get("patient_id"),
+                    )
+                    portal_payload = orchestrator_regimen_to_portal(
+                        selected_drugs,
+                        regimen_result,
+                        engine_meta=engine_meta,
+                    )
+                    self._send_json(200, portal_payload)
+                except Exception as e:
+                    self._send_json(500, {"error": "DDI evaluation failed", "detail": str(e)})
+                return
+
             drug_a = payload.get("drug_a") or payload.get("drug1") or payload.get("drug_a_id")
             drug_b = payload.get("drug_b") or payload.get("drug2") or payload.get("drug_b_id")
 

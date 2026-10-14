@@ -1,112 +1,137 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Light EHR Theme Colors */
-  --bg-page: #f4f5f9;
+  /* Neutral clinical research palette — warm off-white, sage accent */
+  --bg-page: #f7f6f3;
   --bg-card: #ffffff;
-  --bg-hover: #f8fafc;
-  
-  --border-card: #e6e8f0;
-  --border-subtle: #f1f5f9;
+  --bg-hover: #f3f2ef;
+  --bg-muted: #eceae6;
 
-  --text-dark: #1e293b;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
+  --border-card: #e2e0db;
+  --border-subtle: #ebe9e5;
+
+  --text-dark: #2c2c2c;
+  --text-muted: #6b6b6b;
+  --text-light: #8a8a8a;
 
   --nav-bg: #ffffff;
-  --table-header-bg: #f8fafc;
-  --table-selected-row: #f0f9ff;
+  --table-header-bg: #f3f2ef;
+  --table-selected-row: #eef3f0;
 
   --input-bg: #ffffff;
-  --input-border: #cbd5e1;
+  --input-border: #d4d2cd;
 
-  --primary-blue: #2563eb;
-  --primary-blue-hover: #1d4ed8;
-  --primary-purple: #9333ea;
-  
-  --soft-blue-bg: #e0f2fe;
-  --soft-blue-border: #0284c7;
-  --soft-blue-text: #0369a1;
+  /* Primary accent: muted sage */
+  --accent: #5f7d73;
+  --accent-hover: #516b62;
+  --accent-soft-bg: #eef3f0;
+  --accent-soft-border: #c5d4cd;
+  --accent-soft-text: #3d524b;
 
-  --soft-pink-bg: #fce7f3;
-  --soft-pink-border: #db2777;
-  --soft-pink-text: #9d174d;
+  /* Legacy aliases (components reference these) */
+  --primary-blue: var(--accent);
+  --primary-blue-hover: var(--accent-hover);
+  --primary-purple: var(--accent);
 
-  --soft-purple-bg: #f3e8ff;
-  --soft-purple-border: #9333ea;
-  --soft-purple-text: #6b21a8;
+  --soft-blue-bg: var(--accent-soft-bg);
+  --soft-blue-border: var(--accent-soft-border);
+  --soft-blue-text: var(--accent-soft-text);
 
-  --soft-amber-bg: #fef3c7;
-  --soft-amber-border: #d97706;
-  --soft-amber-text: #92400e;
+  --soft-pink-bg: #f5f3f8;
+  --soft-pink-border: #ddd6e4;
+  --soft-pink-text: #5c5468;
 
-  --soft-emerald-bg: #d1fae5;
-  --soft-emerald-border: #059669;
-  --soft-emerald-text: #065f46;
+  --soft-purple-bg: #f5f3f8;
+  --soft-purple-border: #ddd6e4;
+  --soft-purple-text: #5c5468;
 
-  --severity-major-bg: #fef2f2;
-  --severity-major-border: #ef4444;
-  --severity-major-text: #991b1b;
+  --soft-amber-bg: #f8f4ec;
+  --soft-amber-border: #e8dcc8;
+  --soft-amber-text: #6b5c45;
+
+  --soft-emerald-bg: #eef3f0;
+  --soft-emerald-border: #c5d4cd;
+  --soft-emerald-text: #3d524b;
+
+  --severity-major-bg: #faf0ef;
+  --severity-major-border: #d4a5a0;
+  --severity-major-text: #7a3f3a;
+
+  --severity-moderate-bg: #f8f4ec;
+  --severity-moderate-border: #e8dcc8;
+  --severity-moderate-text: #6b5c45;
+
+  --severity-low-bg: #eef3f0;
+  --severity-low-border: #c5d4cd;
+  --severity-low-text: #3d524b;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --radius-card: 14px;
+  --radius-card: 10px;
   --radius-btn: 8px;
   --radius-pill: 9999px;
 
-  --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  --shadow-soft: 0 1px 2px rgba(44, 44, 44, 0.04);
+  --focus-ring: 0 0 0 3px rgba(95, 125, 115, 0.25);
 }
 
-/* Dark EHR Theme Colors */
 .dark-theme {
-  --bg-page: #090d16;
-  --bg-card: #131b2e;
-  --bg-hover: #1c2842;
-  
-  --border-card: #233252;
-  --border-subtle: #1a2640;
+  --bg-page: #1a1c1b;
+  --bg-card: #242726;
+  --bg-hover: #2d302f;
+  --bg-muted: #353938;
 
-  --text-dark: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-light: #64748b;
+  --border-card: #3d4240;
+  --border-subtle: #353938;
 
-  --nav-bg: #131b2e;
-  --table-header-bg: #0f172a;
-  --table-selected-row: rgba(37, 99, 235, 0.18);
+  --text-dark: #eceae6;
+  --text-muted: #a8a8a8;
+  --text-light: #7a7a7a;
 
-  --input-bg: #0f172a;
-  --input-border: #334155;
+  --nav-bg: #242726;
+  --table-header-bg: #2d302f;
+  --table-selected-row: rgba(95, 125, 115, 0.15);
 
-  --primary-blue: #3b82f6;
-  --primary-blue-hover: #60a5fa;
-  --primary-purple: #a855f7;
-  
-  --soft-blue-bg: rgba(2, 132, 199, 0.2);
-  --soft-blue-border: #38bdf8;
-  --soft-blue-text: #7dd3fc;
+  --input-bg: #1a1c1b;
+  --input-border: #4a504d;
 
-  --soft-pink-bg: rgba(219, 39, 119, 0.2);
-  --soft-pink-border: #f472b6;
-  --soft-pink-text: #fbcfe8;
+  --accent: #8aa89e;
+  --accent-hover: #9bb8af;
+  --accent-soft-bg: rgba(95, 125, 115, 0.12);
+  --accent-soft-border: #5f7d73;
+  --accent-soft-text: #b8cfc6;
 
-  --soft-purple-bg: rgba(147, 51, 234, 0.2);
-  --soft-purple-border: #c084fc;
-  --soft-purple-text: #e9d5ff;
+  --primary-blue: var(--accent);
+  --primary-blue-hover: var(--accent-hover);
+  --primary-purple: var(--accent);
 
-  --soft-amber-bg: rgba(217, 119, 6, 0.2);
-  --soft-amber-border: #fbbf24;
-  --soft-amber-text: #fde68a;
+  --soft-blue-bg: var(--accent-soft-bg);
+  --soft-blue-border: var(--accent-soft-border);
+  --soft-blue-text: var(--accent-soft-text);
 
-  --soft-emerald-bg: rgba(5, 150, 105, 0.2);
-  --soft-emerald-border: #34d399;
-  --soft-emerald-text: #a7f3d0;
+  --soft-pink-bg: rgba(221, 214, 228, 0.08);
+  --soft-pink-border: #5c5468;
+  --soft-pink-text: #c4bdd0;
 
-  --severity-major-bg: rgba(239, 68, 68, 0.2);
-  --severity-major-border: #f87171;
-  --severity-major-text: #fca5a5;
+  --soft-purple-bg: rgba(221, 214, 228, 0.08);
+  --soft-purple-border: #5c5468;
+  --soft-purple-text: #c4bdd0;
 
-  --shadow-soft: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
+  --soft-amber-bg: rgba(232, 220, 200, 0.1);
+  --soft-amber-border: #8a7355;
+  --soft-amber-text: #d4c4a8;
+
+  --soft-emerald-bg: var(--accent-soft-bg);
+  --soft-emerald-border: var(--accent-soft-border);
+  --soft-emerald-text: var(--accent-soft-text);
+
+  --severity-major-bg: rgba(212, 165, 160, 0.12);
+  --severity-major-border: #a8706a;
+  --severity-major-text: #e8b4b0;
+
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --focus-ring: 0 0 0 3px rgba(138, 168, 158, 0.35);
 }
 
 * {
@@ -119,10 +144,12 @@ body {
   background-color: var(--bg-page);
   color: var(--text-dark);
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #root {
@@ -131,10 +158,18 @@ body {
   flex-direction: column;
 }
 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 .screenshot-card {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }

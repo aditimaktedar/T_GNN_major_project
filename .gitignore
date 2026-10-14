@@ -1,0 +1,63 @@
+
+# Python virtual environment and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Large datasets and generated data
+data/raw/
+data/interim/
+data/processed/
+data/selected/
+
+# Model checkpoints and generated model files
+*.pt
+*.pth
+*.joblib
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.db
+# Additional Python virtual environments
+.venvbin/
+venvbin/
+env/
+
+# Frontend dependencies and build output
+node_modules/
+dist/
+build/
+
+# Environment variables
+.env
+.env.*
+
+# IDE settings
+.vscode/
+# Generated results
+results/
+
+# Python cache variants
+*.pyc
+*.pyo
+
+# SQLite database sidecar files
+*.db-shm
+*.db-wal# Generated results
+results/
+
+# Python cache variants
+*.pyc
+*.pyo
+
+# SQLite database sidecar files
+*.db-shm
+*.db-wal
+# Nested frontend dependencies
+**/node_modules/

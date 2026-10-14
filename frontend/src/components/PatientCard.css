@@ -16,18 +16,81 @@
   width: 100%;
 }
 
+.patient-accent-avatar,
 .patient-purple-avatar {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: var(--primary-purple);
+  background: var(--accent);
   color: #ffffff;
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+}
+
+.patient-mrn-label {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 0.15rem;
+}
+
+.edit-form-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.input-invalid {
+  border-color: var(--severity-major-border) !important;
+}
+
+.field-error {
+  font-size: 0.72rem;
+  color: var(--severity-major-text);
+}
+
+.profile-save-banner {
+  font-size: 0.8125rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.profile-save-banner.success {
+  background: var(--accent-soft-bg);
+  border: 1px solid var(--accent-soft-border);
+  color: var(--accent-soft-text);
+}
+
+.profile-save-banner.error {
+  background: var(--severity-major-bg);
+  border: 1px solid var(--severity-major-border);
+  color: var(--severity-major-text);
+}
+
+.read-only-val {
+  color: var(--text-muted);
+}
+
+.chart-primary-btn.secondary {
+  background: var(--bg-hover);
+  color: var(--text-dark);
+  border: 1px solid var(--border-card);
 }
 
 .sidebar-name-block {
@@ -176,6 +239,12 @@
 }
 
 .nav-item-link {
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -228,11 +297,18 @@
 }
 
 .section-collapsible-header {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
   user-select: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
 
 .section-title-text {

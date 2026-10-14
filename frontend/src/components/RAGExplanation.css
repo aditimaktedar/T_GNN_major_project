@@ -17,9 +17,10 @@
   z-index: 2;
 }
 
+.timeline-node-dot.neutral-node,
 .timeline-node-dot.pink-node {
-  background: var(--soft-pink-border);
-  color: white;
+  background: var(--accent);
+  color: #fff;
 }
 
 .timeline-node-dot svg {
@@ -34,18 +35,25 @@
   background: var(--bg-card);
 }
 
+.timeline-content-card.neutral-card-bg,
 .timeline-content-card.pink-card-bg {
-  background: var(--soft-pink-bg);
-  border-color: var(--soft-pink-border);
+  background: var(--bg-card);
+  border-color: var(--border-card);
 }
 
 .timeline-card-header {
+  width: 100%;
   padding: 0.85rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
   user-select: none;
+  background: transparent;
+  border: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
 }
 
 .header-left {
