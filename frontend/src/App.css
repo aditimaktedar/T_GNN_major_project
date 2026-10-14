@@ -779,6 +779,71 @@
   padding: 1rem 1.25rem;
 }
 
+#ddi-evaluation-output {
+  scroll-margin-top: 5.75rem;
+}
+
+.ddi-results-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ddi-pairwise-card,
+.ddi-rag-card,
+.ddi-evidence-card,
+.ddi-meta-card {
+  padding: 1.15rem 1.25rem;
+}
+
+.ddi-pairwise-list {
+  margin-top: 0.75rem;
+}
+
+.pair-interaction-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ddi-collapsible-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+.ddi-collapse-hint {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.ddi-meta-dl {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: minmax(120px, 30%) 1fr;
+  gap: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.ddi-meta-dl dt {
+  color: var(--text-muted);
+}
+
+.ddi-meta-dl dd {
+  margin: 0;
+  color: var(--text-dark);
+}
+
 .portal-alert-success {
   background: var(--accent-soft-bg);
   border-color: var(--accent-soft-border);

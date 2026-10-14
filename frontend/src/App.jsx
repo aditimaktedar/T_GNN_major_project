@@ -22,6 +22,103 @@ import { SourceAuditPanel } from './components/SourceAuditPanel';
 const MAX_MEDICATIONS = 15;
 const NAV_SECTIONS = ['overview', 'medications', 'ddi', 'rag', 'evidence'];
 
+function selectionSignature(drugs) {
+  return drugs
+    .map((d) => d.id || d.drugbank_id || d.name || '')
+    .filter(Boolean)
+    .sort()
+    .join('|');
+}
+
+function DdiEvaluationResults({ evaluationData, isEvaluating, resultsStale, resultsAnchorRef }) {
+  if (resultsStale) {
+    return (
+      <div className="screenshot-card portal-empty-state">
+        <p className="portal-empty-title">Selection changed</p>
+        <p className="portal-empty-copy">
+          Run interaction evaluation again to refresh results for the current medications.
+        </p>
+      </div>
+    );
+  }
+
+  if (!evaluationData) {
+    return (
+      <div className="screenshot-card portal-empty-state">
+        <p className="portal-empty-title">No evaluation results yet</p>
+        <p className="portal-empty-copy">
+          Select at least two medications above, then run interaction evaluation.
+        </p>
+      </div>
+    );
+  }
+
+  const pairs = evaluationData.pairs || [];
+
+  return (
+    <div className="ddi-results-stack" ref={resultsAnchorRef} id="ddi-evaluation-output">
+      <PredictionPanel
+        prediction={evaluationData.prediction}
+        evaluationData={evaluationData}
+        isEvaluating={isEvaluating}
+      />
+
+      {pairs.length > 0 && (
+        <div className="screenshot-card ddi-pairwise-card">
+          <h3 className="card-main-title">Pairwise interaction results</h3>
+          <p className="section-helper">
+            Individual pair scores from the model for this evaluation ({pairs.length} pair
+            {pairs.length === 1 ? '' : 's'}).
+          </p>
+          <div className="pairwise-cards-list ddi-pairwise-list">
+            {pairs.map((pair, idx) => (
+              <div
+                key={`${pair.drug1?.id}-${pair.drug2?.id}-${idx}`}
+                className={`pair-breakdown-card severity-${(pair.severity || 'low').toLowerCase()}`}
+              >
+                <div className="pair-card-top">
+                  <div className="pair-drugs-names">
+                    <span className="pair-drug-badge">{pair.drug1?.name}</span>
+                    <span className="pair-arrow" aria-hidden="true">
+                      ↔
+                    </span>
+                    <span className="pair-drug-badge">{pair.drug2?.name}</span>
+                  </div>
+                  <div className="pair-metrics">
+                    {pair.severity && (
+                      <span className={`pair-sev-tag ${pair.severity.toLowerCase()}`}>{pair.severity}</span>
+                    )}
+                    {pair.probability != null && (
+                      <span className="pair-prob-val">
+                        {Math.round(pair.probability * 100)}% model score
+                      </span>
+                    )}
+                    {pair.interaction && (
+                      <span className="pair-interaction-tag">{pair.interaction}</span>
+                    )}
+                  </div>
+                </div>
+                {pair.mechanism && (
+                  <div className="pair-card-mechanism">
+                    <span className="mech-label">Mechanism:</span> {pair.mechanism}
+                  </div>
+                )}
+                {pair.summary && <p className="pair-card-summary">{pair.summary}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {evaluationData.rag_explanation && (
+        <div className="screenshot-card ddi-rag-card">
+          <RAGExplanation ragData={evaluationData.rag_explanation} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function sectionFromHash() {
   const id = window.location.hash.replace(/^#/, '');
   return NAV_SECTIONS.includes(id) ? id : 'overview';
@@ -86,6 +183,8 @@ export default function App() {
   const [evaluationError, setEvaluationError] = useState(null);
   const [loadNotice, setLoadNotice] = useState(null);
   const evaluationAbortRef = useRef(null);
+  const ddiResultsAnchorRef = useRef(null);
+  const scrollToResultsPendingRef = useRef(false);
  
   const [newMedName, setNewMedName] = useState('');
   const [newMedId, setNewMedId] = useState('');
@@ -154,10 +253,11 @@ export default function App() {
  
   // Trigger polypharmacy DDI evaluation via Database API
   const handleRunEvaluation = async () => {
-    if (selectedDrugs.length < 2) {
+    const drugsSnapshot = selectedDrugs.map((d) => ({ ...d }));
+    if (drugsSnapshot.length < 2) {
       return;
     }
- 
+
     if (isEvaluating) return;
 
     if (evaluationAbortRef.current) {
@@ -170,10 +270,11 @@ export default function App() {
     setEvaluationError(null);
 
     try {
-      const evaluationResult = await evaluateRegimenDDI(selectedDrugs, { signal: controller.signal });
+      const evaluationResult = await evaluateRegimenDDI(drugsSnapshot, { signal: controller.signal });
+      if (controller.signal.aborted) return;
       setActiveEvaluatedData(evaluationResult);
       setApiStatus('connected');
-      handleSelectNavTab('ddi');
+      scrollToResultsPendingRef.current = true;
     } catch (err) {
       if (err.name === 'AbortError') return;
       console.error("Evaluation API failed:", err);
@@ -265,12 +366,7 @@ export default function App() {
       }));
  
       if (selectedDrugs.some((m) => m.id === medId || m.db_id === numericId)) {
-        const updatedSelected = selectedDrugs.filter((m) => m.id !== medId && m.db_id !== numericId);
-        if (updatedSelected.length >= 2) {
-          setSelectedDrugs(updatedSelected);
-        } else {
-          setSelectedDrugs(updatedMeds.slice(0, 2));
-        }
+        setSelectedDrugs(selectedDrugs.filter((m) => m.id !== medId && m.db_id !== numericId));
       }
     } catch (err) {
       console.error("Error discontinuing medication in DB:", err);
@@ -317,23 +413,29 @@ export default function App() {
     }
   };
 
-  // Dropdown Selection Handlers for Drug 1 & Drug 2 in DrugPairCard
   const handleSelectDrug1 = (drugId) => {
-    const found = patient.medications.find((m) => (m.id || m.drugbank_id) === drugId);
-    if (found) {
-      const currentDrug2 = selectedDrugs[1] || patient.medications[1];
-      const remaining = selectedDrugs.slice(2);
-      setSelectedDrugs([found, currentDrug2, ...remaining.filter(m => (m.id || m.drugbank_id) !== drugId)]);
-    }
+    setSelectedDrugs((prev) => {
+      if (prev.length < 2) return prev;
+      const found = prev.find((m) => (m.id || m.drugbank_id) === drugId);
+      if (!found) return prev;
+
+      const others = prev.filter((m) => medKey(m) !== medKey(found));
+      let second = others[0];
+      if (!second) return [found];
+
+      return [found, second, ...others.slice(1)];
+    });
   };
 
   const handleSelectDrug2 = (drugId) => {
-    const found = patient.medications.find((m) => (m.id || m.drugbank_id) === drugId);
-    if (found) {
-      const currentDrug1 = selectedDrugs[0] || patient.medications[0];
-      const remaining = selectedDrugs.slice(2);
-      setSelectedDrugs([currentDrug1, found, ...remaining.filter(m => (m.id || m.drugbank_id) !== drugId)]);
-    }
+    setSelectedDrugs((prev) => {
+      if (prev.length < 2) return prev;
+      const found = prev.find((m) => (m.id || m.drugbank_id) === drugId);
+      if (!found || medKey(found) === medKey(prev[0])) return prev;
+
+      const rest = prev.filter((m) => medKey(m) !== medKey(found) && medKey(m) !== medKey(prev[0]));
+      return [prev[0], found, ...rest];
+    });
   };
 
   const handleSelectPresetPair = (pairString) => {
@@ -365,6 +467,28 @@ export default function App() {
   };
 
   const showWorkflowHints = activeNavTab === 'ddi';
+
+  const evaluationMatchesSelection =
+    activeEvaluatedData &&
+    selectionSignature(selectedDrugs) ===
+      selectionSignature(activeEvaluatedData.selectedDrugs || []);
+  const resultsStale = Boolean(activeEvaluatedData && !evaluationMatchesSelection);
+
+  useEffect(() => {
+    if (!scrollToResultsPendingRef.current) return;
+    if (isEvaluating) return;
+    if (!activeEvaluatedData || resultsStale) return;
+    if (activeNavTab !== 'ddi') return;
+
+    scrollToResultsPendingRef.current = false;
+    const node = ddiResultsAnchorRef.current;
+    if (!node) return;
+
+    const t = window.setTimeout(() => {
+      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [activeEvaluatedData, isEvaluating, resultsStale, activeNavTab]);
 
   return (
     <div className={`app-layout screenshot-theme ${darkMode ? 'dark-theme' : ''}`}>
@@ -616,29 +740,22 @@ export default function App() {
                   onSelectPresetPair={handleSelectPresetPair}
                   onToggleEvalMedication={toggleEvalMedication}
                   onSelectAllEval={handleSelectAllEvalToggle}
+                  resultsStale={resultsStale}
                 />
               </div>
 
-              <div className="main-panel-step" id="sec-prediction">
-                {isEvaluating && !activeEvaluatedData ? (
-                  <div className="screenshot-card portal-empty-state">
-                    <p className="portal-empty-title">Running T-GNN + RAG evaluation</p>
-                    <p className="portal-empty-copy">Analyzing pairwise interactions across the selected regimen.</p>
-                  </div>
-                ) : activeEvaluatedData ? (
-                  <PredictionPanel
-                    prediction={activeEvaluatedData.prediction}
-                    evaluationData={activeEvaluatedData}
-                    isEvaluating={isEvaluating}
-                  />
-                ) : (
-                  <div className="screenshot-card portal-empty-state">
-                    <p className="portal-empty-title">No evaluation results yet</p>
-                    <p className="portal-empty-copy">
-                      Select at least two medications above, then run interaction evaluation.
-                    </p>
+              <div className="main-panel-step ddi-results-block" id="sec-prediction">
+                {isEvaluating && (
+                  <div className="portal-loading-banner" role="status">
+                    Running T-GNN + RAG evaluation across {selectedDrugs.length} medications…
                   </div>
                 )}
+                <DdiEvaluationResults
+                  evaluationData={activeEvaluatedData}
+                  isEvaluating={isEvaluating}
+                  resultsStale={resultsStale}
+                  resultsAnchorRef={ddiResultsAnchorRef}
+                />
               </div>
             </>
           )}

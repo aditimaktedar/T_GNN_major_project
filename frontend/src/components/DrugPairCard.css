@@ -232,8 +232,111 @@
   margin: 0;
 }
 
-.eval-picker-table-wrap {
+.eval-picker-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.eval-count-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft-bg);
+  color: var(--accent-soft-text);
+  border: 1px solid var(--accent-soft-border);
+}
+
+.eval-med-box-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+@media (min-width: 640px) {
+  .eval-med-box-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .eval-med-box-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.eval-med-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-btn);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.eval-med-box.is-selected {
+  background: var(--accent-soft-bg);
+  border-color: var(--accent-soft-border);
+}
+
+.eval-med-box-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  min-height: 100%;
+  font-size: 0.9375rem;
+  color: var(--text-dark);
+}
+
+.eval-med-box:hover {
+  border-color: var(--accent-soft-border);
+  background: var(--bg-hover);
+}
+
+.eval-med-box.is-selected:hover {
+  background: var(--accent-soft-bg);
+}
+
+.eval-med-box-label:focus-within {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-btn);
+}
+
+.eval-med-box-checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.eval-med-box-name {
+  line-height: 1.4;
+  word-break: break-word;
+  flex: 1;
+}
+
+.eval-stale-notice {
+  font-size: 0.8125rem;
+  color: var(--severity-moderate-text);
+  background: var(--severity-moderate-bg);
+  border: 1px solid var(--severity-moderate-border);
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-btn);
+  margin: 0 0 0.75rem;
+}
+
+.eval-actions-row {
   margin-top: 0.25rem;
+}
+
+.drug-dropdown-toolbar.is-disabled {
+  opacity: 0.65;
 }
 
 .eval-remove-chip-btn {
